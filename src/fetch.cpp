@@ -23,8 +23,10 @@ std::size_t save_data(const char* input, std::size_t chunk_size, std::size_t n_c
 }
 
 
-std::vector<std::string> fetch(std::string tag, std::string domain, uint64_t timestamp, const Configurator& cfg, bool use_cache)
+Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Configurator& cfg, bool use_cache)
 {
+  Result result;
+
   curl_version_info_data *curlver_data = curl_version_info(CURLVERSION_NOW);
   std::string useragent{"curl/" + std::string(curlver_data->version)};
 
@@ -46,11 +48,16 @@ std::vector<std::string> fetch(std::string tag, std::string domain, uint64_t tim
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, save_data);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &http_data);
 
-    CURLcode result = curl_easy_perform(curl);
+    CURLcode res = curl_easy_perform(curl);
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
 
-    if (result != CURLE_OK)
-      std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(result) << '\n';
+    if (res != CURLE_OK)
+      std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << '\n';
+
+    double byte_count;
+    curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD, &byte_count);
+    result.byte_count = std::round(byte_count);
+
 
     curl_easy_cleanup(curl);
 
@@ -60,15 +67,13 @@ std::vector<std::string> fetch(std::string tag, std::string domain, uint64_t tim
       {
         nlohmann::json json = nlohmann::json::parse(http_data);
 
-        std::vector<std::string> paths;
-
         for (const auto& j : json) {
           if (!domain.empty() && j["domain"] != domain)
              continue;
-          paths.push_back(cfg.db.path + '/' + j["payloads"][0]["name"].get<std::string>());
+          result.paths.push_back(cfg.db.path + '/' + j["payloads"][0]["name"].get<std::string>());
         }
 
-        return paths;
+        return result;
       }
       catch (nlohmann::json::exception& e)
       {

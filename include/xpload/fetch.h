@@ -8,6 +8,12 @@
 
 namespace xpload {
 
-std::vector<std::string> fetch(std::string tag, std::string domain = "", uint64_t timestamp = UINT64_MAX, const Configurator& cfg = Configurator(), bool use_cache = false);
+struct Result
+{
+  std::vector<std::string> paths;
+  size_t byte_count;
+};
+
+Result fetch(std::string tag, std::string domain = "", uint64_t timestamp = UINT64_MAX, const Configurator& cfg = Configurator(), bool use_cache = false);
 
 }
