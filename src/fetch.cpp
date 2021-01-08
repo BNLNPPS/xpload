@@ -41,7 +41,6 @@ Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Conf
     if (cfg.db.verbosity > 0)
       std::cout << "url: " << url.str() << '\n';
 
-    long http_code(0);
     std::string http_data;
 
     curl_easy_setopt(curl, CURLOPT_URL, url.str().c_str());
@@ -50,7 +49,6 @@ Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Conf
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &http_data);
 
     CURLcode res = curl_easy_perform(curl);
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
 
     if (res != CURLE_OK)
       std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << '\n';
@@ -59,6 +57,8 @@ Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Conf
     curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD, &byte_count);
     result.byte_count = std::round(byte_count);
 
+    long http_code(0);
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
 
     curl_easy_cleanup(curl);
 
@@ -68,10 +68,10 @@ Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Conf
       {
         nlohmann::json json = nlohmann::json::parse(http_data);
 
-        for (const auto& j : json) {
-          if (!domain.empty() && j["domain"] != domain)
+        for (const auto& obj : json) {
+          if (!domain.empty() && obj["domain"] != domain)
              continue;
-          result.paths.push_back(cfg.db.path + '/' + j["payloads"][0]["name"].get<std::string>());
+          result.paths.push_back(cfg.db.path + '/' + obj["payloads"][0]["name"].get<std::string>());
         }
 
         return result;

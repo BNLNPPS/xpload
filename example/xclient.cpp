@@ -13,7 +13,6 @@ class ArgParser
  public:
   ArgParser(int &argc, char **argv);
   string get_value(const string &option) const;
-  int verify() const;
  private:
    vector<string> args;
 };
@@ -66,7 +65,7 @@ string ArgParser::get_value(const string &option) const
   // Default values
   if (value.empty() && option == "-c") return "test";
   if (value.empty() && option == "-t") return "example_tag_1";
-  if (value.empty() && option == "-s") return "9999999999";
+  if (value.empty() && option == "-s") return std::to_string(UINT64_MAX);
 
   return value;
 }

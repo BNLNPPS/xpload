@@ -287,7 +287,7 @@ if __name__ == "__main__":
     parser_push.add_argument("-s", "--start", type=int, default=0, help="Start of interval when the payload is applied")
 
     # Action: fetch
-    parser_fetch = subparsers.add_parser("fetch", help="Fetch entries")
+    parser_fetch = subparsers.add_parser("fetch", help="Fetch one or more payload entries")
     parser_fetch.add_argument("tag", type=str, help="Tag for the payload file")
     parser_fetch.add_argument("domain", type=str, default=None, nargs='?', help="Domain for the payload file")
     parser_fetch.add_argument("timestamp", type=int, default=0, nargs='?', help="Timestamp of DAQ data")
