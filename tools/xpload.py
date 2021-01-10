@@ -46,6 +46,12 @@ def nestednamedtuple(obj):
 
 
 class DbConfig(namedtuple('DbConfig', ['host', 'port', 'apiroot', 'path'])):
+    __slots__ = ()
+
+    def __new__(cls, *args, **kwargs):
+        kwargs = {k: v for k, v in kwargs.items() if k in cls._fields}
+        return super().__new__(cls, *args, **kwargs)
+
     def url(self):
         return "http://" + self.host + ':' + self.port + self.apiroot
 
