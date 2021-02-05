@@ -6,13 +6,13 @@
 #
 # Fill database:
 #
-# $ curl -X POST -H "Content-Type: application/json" -d @bulk_pils.json http://localhost:8000/api/cdb_rest/pil
-# $ curl -X POST -H "Content-Type: application/json" -d @bulk_tags.json http://localhost:8000/api/cdb_rest/tag
+# $ curl -X POST -H "Content-Type: application/json" -d @bulk_pils.json http://localhost:8080/api/cdb_rest/pil
+# $ curl -X POST -H "Content-Type: application/json" -d @bulk_tags.json http://localhost:8080/api/cdb_rest/tag
 #
 # Read back:
 #
-# $ curl -s http://localhost:8000/api/cdb_rest/pils | python -m json.tool --indent 1 > bulk_pils_readback.json
-# $ curl -s http://localhost:8000/api/cdb_rest/pils | python -m json.tool --indent 1 > bulk_pils_readback.json
+# $ curl -s http://localhost:8080/api/cdb_rest/pils | python -m json.tool --indent 1 > bulk_pils_readback.json
+# $ curl -s http://localhost:8080/api/cdb_rest/pils | python -m json.tool --indent 1 > bulk_pils_readback.json
 
 import json
 import requests
@@ -121,7 +121,7 @@ def post_data(endpoint: str, params: dict, host_root: str):
 import argparse
 
 parser = argparse.ArgumentParser(description="Create payload interval lists")
-parser.add_argument("host_root", nargs="?", type=str, default="localhost:8000/api/cdb_rest", help="Host URL")
+parser.add_argument("host_root", nargs="?", type=str, default="localhost:8080/api/cdb_rest", help="Host URL")
 parser.add_argument("outname", nargs="?", type=str, default="bulk", help="Output file base")
 
 args = parser.parse_args()
