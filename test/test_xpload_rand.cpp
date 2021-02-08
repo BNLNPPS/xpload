@@ -78,19 +78,19 @@ struct Tokens {
   std::string tag, domain, payload;
 };
 
-auto random_tokens(std::pair<int, int> tag_range, std::pair<int, int> dom_range, std::pair<int, int> tst_range)
+auto random_tokens(std::pair<int, int> tag_limits, std::pair<int, int> dom_limits, std::pair<int, int> tst_limits)
 {
-  if (tag_range.first > tag_range.second ||
-      dom_range.first > dom_range.second ||
-      tst_range.first > tst_range.second)
+  if (tag_limits.first > tag_limits.second ||
+      dom_limits.first > dom_limits.second ||
+      tst_limits.first > tst_limits.second)
   {
     std::cerr << "Assertion failed: a <= b in [a, b]\n";
     return Tokens{};
   }
 
-  uint64_t timestamp  = tst_range.first + std::rand() % (tst_range.second - tst_range.first + 1);
-  int tag_index       = tag_range.first + std::rand() % (tag_range.second - tag_range.first + 1);
-  int dom_index       = dom_range.first + std::rand() % (dom_range.second - dom_range.first + 1);
+  uint64_t timestamp  = tst_limits.first + std::rand() % (tst_limits.second - tst_limits.first + 1);
+  int tag_index       = tag_limits.first + std::rand() % (tag_limits.second - tag_limits.first + 1);
+  int dom_index       = dom_limits.first + std::rand() % (dom_limits.second - dom_limits.first + 1);
 
   std::ostringstream tag; tag << "Tag_" << tag_index;
   std::ostringstream domain; domain << "Domain_" << dom_index;
