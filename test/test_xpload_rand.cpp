@@ -6,6 +6,7 @@
 #include <iostream>
 #include <iterator>
 #include <numeric>
+#include <regex>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -52,6 +53,25 @@ std::vector<int> split_interval(int b, int n)
 
   return segments;
 }
+
+
+std::pair<int, int> parse_limits(std::string limits_str)
+{
+  const std::regex limits_regex("([0-9]+)-([0-9]+)");
+  std::smatch limits_matches;
+  // Create default limits [0,0]
+  std::pair<int, int> limits;
+
+  if (std::regex_match(limits_str, limits_matches, limits_regex)) {
+    limits.first  = std::stoi(limits_matches[1]);
+    limits.second = std::stoi(limits_matches[2]);
+  } else {
+    std::cerr << "Error: Expected input formatted as N-M, e.g. 3-8 [" << __PRETTY_FUNCTION__ << "]\n";
+  }
+
+  return limits;
+}
+
 
 struct Tokens {
   uint64_t timestamp;
@@ -101,6 +121,9 @@ int main(int argc, char *argv[])
   int b = (args.size() > 0) ? stoi(args[0]) : 100;
   int n = (args.size() > 1) ? stoi(args[1]) : ceil(b/10.);
   int rand_seed = (args.size() > 2) ? stoi(args[2]) : 12345;
+  pair<int, int> tag_limits = (args.size() > 3) ? parse_limits(args[3]) : pair<int, int>{1, 100};
+  pair<int, int> dom_limits = (args.size() > 4) ? parse_limits(args[4]) : pair<int, int>{1, 10};
+  pair<int, int> tst_limits = (args.size() > 5) ? parse_limits(args[5]) : pair<int, int>{1, 1000};
 
   std::srand(rand_seed);
 
@@ -125,7 +148,7 @@ int main(int argc, char *argv[])
   {
     this_thread::sleep_for(chrono::seconds(segment));
 
-    tk = random_tokens({1, 100}, {1, 10}, {1, 1000});
+    tk = random_tokens(tag_limits, dom_limits, tst_limits);
 
     auto t0 = chrono::system_clock::now();
     auto t1 = chrono::high_resolution_clock::now();
