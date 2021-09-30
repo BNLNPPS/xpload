@@ -33,3 +33,11 @@ find_package(CURL REQUIRED)
 add_subdirectory(src)
 
 install(EXPORT xploadTargets DESTINATION ${XPLOAD_CMAKE_CONFIG_INSTALL_DIR} FILE xpload-config.cmake)
+
+# Set up tests
+include(CTest)
+
+if(BUILD_TESTING)
+    enable_testing()
+    add_subdirectory(test)
+endif()
