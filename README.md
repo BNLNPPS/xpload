@@ -6,6 +6,7 @@
 - C++17
 - CMake 3.20
 - libcurl
+- jsoncpp
 
 ## Quick Start
 

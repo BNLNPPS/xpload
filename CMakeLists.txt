@@ -29,6 +29,7 @@ set(XPLOAD_DATA_INSTALL_DIR "${CMAKE_INSTALL_FULL_DATADIR}/xpload-${XPLOAD_VERSI
 
 # Set up external dependencies
 find_package(CURL REQUIRED)
+find_package(jsoncpp REQUIRED)
 
 add_subdirectory(src)
 

@@ -4,6 +4,7 @@
 #include <optional>
 
 #include <curl/curl.h>
+#include <json/json.h>
 
 
 namespace xpload {
