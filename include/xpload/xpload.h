@@ -11,6 +11,9 @@ namespace xpload {
 
 std::optional<std::string> fetch(uint64_t timestamp)
 {
+  curl_version_info_data *curlver_data = curl_version_info(CURLVERSION_NOW);
+  std::string useragent{"curl/" + std::string(curlver_data->version)};
+
   CURL *curl;
   CURLcode result;
 
@@ -21,6 +24,7 @@ std::optional<std::string> fetch(uint64_t timestamp)
     // First set the URL that is about to receive our POST. This URL can just as
     // well be a https:// URL if that is what should receive the data.
     curl_easy_setopt(curl, CURLOPT_URL, "http://postit.example.com/moo.cgi");
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, useragent.c_str());
 
     // Now specify the POST data
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "name=daniel&project=curl");
