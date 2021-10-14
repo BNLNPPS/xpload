@@ -28,6 +28,10 @@ class Configurator
   std::string name;
 
   DbConfig db;
+
+ private:
+
+  std::string Locate(std::string filename) const;
 };
 
 }
