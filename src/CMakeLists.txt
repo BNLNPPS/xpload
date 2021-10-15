@@ -3,10 +3,11 @@ configure_file(version.h.in version.h @ONLY)
 
 set(source_files
     configurator.cpp
+    fetch.cpp
 )
 
 add_library(xpload ${source_files})
-target_link_libraries(xpload jsoncpp_lib)
+target_link_libraries(xpload CURL::libcurl jsoncpp_lib)
 
 target_include_directories(xpload
     INTERFACE
