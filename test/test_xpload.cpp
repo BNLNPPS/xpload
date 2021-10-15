@@ -1,8 +1,7 @@
 #include <cstdint>
 #include <iostream>
-#include <optional>
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "xpload/xpload.h"
 
@@ -11,12 +10,13 @@ int main()
 {
   using namespace std;
 
+  string tag = "TestSmallGT2";
   uint64_t timestamp = 9999999999;
 
-  optional<string> path = xpload::fetch(timestamp);
+  vector<string> paths = xpload::fetch(tag, timestamp);
 
-  if (path)
-    cout << path.value() << '\n';
+  for (const string& path : paths) 
+    cout << path << '\n';
 
   return EXIT_SUCCESS;
 } 
