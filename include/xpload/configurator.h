@@ -32,6 +32,7 @@ class Configurator
  private:
 
   std::string Locate(std::string filename) const;
+  std::string ReadConfig(std::string filepath);
 };
 
 }

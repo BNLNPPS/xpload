@@ -1,8 +1,11 @@
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <sys/stat.h>
 #include <vector>
+
+#include <json/json.h>
 
 #include "xpload/configurator.h"
 #include "config.h"
@@ -18,6 +21,11 @@ Configurator::Configurator(std::string name) :
   if (filepath.empty())
     std::cerr << "Error: Could not find config file \"" << name << ".json\" in paths defined by $XPLOAD_DIR"
               << " and built-in list \"" << std::string(XPLOAD_CONFIG_SEARCH_PATHS) << "\"\n";
+
+  std::string error = ReadConfig(filepath);
+
+  if (!error.empty())
+    std::cerr << "Error: Could not read config file \"" << name << ".json\"\n";
 }
 
 
@@ -57,6 +65,33 @@ std::string Configurator::Locate(std::string filename) const
   }
 
   return "";
+}
+
+
+/**
+ * Expects a valid filepath.
+ */
+std::string Configurator::ReadConfig(std::string filepath)
+{
+  Json::CharReaderBuilder builder;
+  Json::String error;
+  Json::Value json;
+
+  std::ifstream ifs(filepath);
+
+  if ( !Json::parseFromStream(builder, ifs, &json, &error) )
+  {
+    return error;
+  }
+
+  db = {
+    json["host"].asString(),
+    json["apiroot"].asString(),
+    json["port"].asString(),
+    json["path"].asString()
+  };
+
+  return {};
 }
 
 }

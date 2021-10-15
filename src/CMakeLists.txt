@@ -6,6 +6,7 @@ set(source_files
 )
 
 add_library(xpload ${source_files})
+target_link_libraries(xpload jsoncpp_lib)
 
 target_include_directories(xpload
     INTERFACE
