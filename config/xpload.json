@@ -1,6 +1,6 @@
 {
-  "host":    "localhost",
-  "port":    "8000",
+  "host":    "nopayloaddb-nopayloaddb.apps.sdcc.bnl.gov",
+  "port":    "80",
   "apiroot": "/api/cdb_rest",
   "path":    "/path/to/payload/data",
 }
