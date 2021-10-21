@@ -37,6 +37,15 @@ install(EXPORT xploadTargets DESTINATION ${XPLOAD_CMAKE_CONFIG_INSTALL_DIR} FILE
 
 include(CMakePackageConfigHelpers)
 
+# Generate config file that includes the exported targets
+set(config_file "${CMAKE_CURRENT_BINARY_DIR}/xploadConfig.cmake")
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
+    ${config_file}
+    INSTALL_DESTINATION ${XPLOAD_CMAKE_CONFIG_INSTALL_DIR}
+    NO_SET_AND_CHECK_MACRO
+    NO_CHECK_REQUIRED_COMPONENTS_MACRO
+)
+
 # Create and install version file
 set(version_file "${CMAKE_CURRENT_BINARY_DIR}/xploadConfigVersion.cmake")
 write_basic_package_version_file(${version_file}
@@ -44,7 +53,7 @@ write_basic_package_version_file(${version_file}
     COMPATIBILITY AnyNewerVersion
 )
 
-install(FILES "${version_file}" DESTINATION ${XPLOAD_CMAKE_CONFIG_INSTALL_DIR})
+install(FILES "${config_file}" "${version_file}" DESTINATION ${XPLOAD_CMAKE_CONFIG_INSTALL_DIR})
 
 # Set up tests
 include(CTest)
