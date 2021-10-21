@@ -35,6 +35,17 @@ add_subdirectory(src)
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/README.md" DESTINATION ${XPLOAD_DATA_INSTALL_DIR})
 install(EXPORT xploadTargets DESTINATION ${XPLOAD_CMAKE_CONFIG_INSTALL_DIR} FILE xpload-config.cmake)
 
+include(CMakePackageConfigHelpers)
+
+# Create and install version file
+set(version_file "${CMAKE_CURRENT_BINARY_DIR}/xploadConfigVersion.cmake")
+write_basic_package_version_file(${version_file}
+    VERSION ${XPLOAD_VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+
+install(FILES "${version_file}" DESTINATION ${XPLOAD_CMAKE_CONFIG_INSTALL_DIR})
+
 # Set up tests
 include(CTest)
 

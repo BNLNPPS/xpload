@@ -27,13 +27,6 @@ install(TARGETS xpload EXPORT xploadTargets
     ARCHIVE   DESTINATION ${XPLOAD_ARCHIVE_INSTALL_DIR}
     FRAMEWORK DESTINATION ${XPLOAD_FRAMEWORK_INSTALL_DIR})
 
-# Create and install version file
-include(CMakePackageConfigHelpers)
-set(version_file "${CMAKE_CURRENT_BINARY_DIR}/cmake/xpload-config-version.cmake")
-write_basic_package_version_file(${version_file}
-    VERSION ${XPLOAD_VERSION}
-    COMPATIBILITY AnyNewerVersion)
-
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/xpload/ DESTINATION ${XPLOAD_INC_INSTALL_DIR})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config.h DESTINATION ${XPLOAD_INC_INSTALL_DIR})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/version.h DESTINATION ${XPLOAD_INC_INSTALL_DIR})
