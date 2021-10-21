@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.20)
 
 project(xpload LANGUAGES CXX)
 
@@ -31,13 +31,10 @@ find_package(jsoncpp REQUIRED)
 
 add_subdirectory(src)
 
-# Install additional files such as README, LICENSE, etc.
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/README.md" DESTINATION ${XPLOAD_DATA_INSTALL_DIR})
-install(EXPORT xploadTargets DESTINATION ${XPLOAD_CMAKE_CONFIG_INSTALL_DIR} FILE xpload-config.cmake)
-
+# Install files and export configs
 include(CMakePackageConfigHelpers)
 
-# Generate config file that includes the exported targets
+# Generate the config file that is includes the exports
 set(config_file "${CMAKE_CURRENT_BINARY_DIR}/xploadConfig.cmake")
 configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
     ${config_file}
@@ -54,6 +51,9 @@ write_basic_package_version_file(${version_file}
 )
 
 install(FILES "${config_file}" "${version_file}" DESTINATION ${XPLOAD_CMAKE_CONFIG_INSTALL_DIR})
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/README.md" DESTINATION ${XPLOAD_DATA_INSTALL_DIR})
+install(EXPORT xploadTargets DESTINATION ${XPLOAD_CMAKE_CONFIG_INSTALL_DIR} NAMESPACE xpload::)
+
 
 # Set up tests
 include(CTest)
