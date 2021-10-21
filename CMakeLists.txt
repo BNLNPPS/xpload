@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.20)
 project(xpload LANGUAGES CXX)
 
 set(XPLOAD_VERSION_MAJOR 0 CACHE STRING "major version of xpload" FORCE)
-set(XPLOAD_VERSION_MINOR 0 CACHE STRING "minor version of xpload" FORCE)
+set(XPLOAD_VERSION_MINOR 1 CACHE STRING "minor version of xpload" FORCE)
 set(XPLOAD_VERSION_PATCH 0 CACHE STRING "patch version of xpload" FORCE)
 set(XPLOAD_VERSION "${XPLOAD_VERSION_MAJOR}.${XPLOAD_VERSION_MINOR}.${XPLOAD_VERSION_PATCH}" CACHE STRING "version of xpload" FORCE)
 
