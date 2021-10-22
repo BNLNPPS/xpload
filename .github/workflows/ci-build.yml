@@ -10,6 +10,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out Django App
+        uses: actions/checkout@v2
+        with:
+          repository: plexoos/npdb
+          ref: dev
+          path: npdb
+
+      - name: Start Django App
+        run: docker-compose -f npdb/docker-compose.yml up -d --build
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
