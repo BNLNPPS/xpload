@@ -19,13 +19,13 @@ Configurator::Configurator(std::string config_name) :
   std::string filepath = Locate(name + ".json");
 
   if (filepath.empty())
-    std::cerr << "Error: Could not find config file \"" << name << ".json\" in paths defined by $XPLOAD_DIR"
-              << " and built-in list \"" << std::string(XPLOAD_CONFIG_SEARCH_PATHS) << "\"\n";
+    std::cerr << "Warning: Could not find config file \"" << name << ".json\" in paths defined by $XPLOAD_DIR"
+              << " and built-in list \"" << std::string(XPLOAD_CONFIG_SEARCH_PATHS) << "\". Using default\n";
 
   std::string error = ReadConfig(filepath);
 
   if (!error.empty())
-    std::cerr << "Error: Could not read config file \"" << name << ".json\"\n";
+    std::cerr << "Warning: Could not read config file \"" << name << ".json\". Using default\n";
 }
 
 
