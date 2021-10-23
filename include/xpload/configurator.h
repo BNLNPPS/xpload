@@ -22,7 +22,7 @@ class Configurator
 {
  public:
 
-  Configurator(std::string name = "xpload");
+  Configurator(std::string config_name = "xpload");
 
   /// A unique name associated with this Configurator
   std::string name;
