@@ -24,6 +24,12 @@ int main(int argc, char *argv[])
 
   vector<string> paths = xpload::fetch(tag, timestamp);
 
+  if (paths.empty())
+  {
+    cout << "No paths found\n";
+    return EXIT_FAILURE;
+  }
+
   for (const string& path : paths) 
     cout << path << '\n';
 

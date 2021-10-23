@@ -4,3 +4,6 @@ add_executable(test_xpload
 
 target_link_libraries(test_xpload xpload CURL::libcurl)
 target_include_directories(test_xpload PRIVATE ${CMAKE_SOURCE_DIR}/include)
+
+
+add_test(NAME "test_xpload" COMMAND bash -c "XPLOAD_CONFIG_NAME=xpload_test ./test_xpload --gtName TestSmallGT2 --minorIOV 9999999999")
