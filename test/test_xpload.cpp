@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
   }
 
   string tag = arg_parser.get_value("--gtName");
-  uint64_t timestamp = stoi(arg_parser.get_value("--minorIOV"));
+  uint64_t timestamp = stol(arg_parser.get_value("--minorIOV"));
 
   vector<string> paths = xpload::fetch(tag, timestamp);
 
