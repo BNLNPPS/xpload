@@ -27,3 +27,8 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           tags: ghcr.io/bnlnpps/xpload-build
+          target: build-stage
+          load: true
+
+      - name: Run Tests
+        run: docker run --network=host ghcr.io/bnlnpps/xpload-build /bin/bash -c "ctest --test-dir build -VV"
