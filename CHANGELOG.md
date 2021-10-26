@@ -1,7 +1,10 @@
 # Changelog
 
+## [0.2.1] - 2021-10-26
 
-## [0.2.0] - 2021-10-21
+- Update documentation and the project installation tree
+
+## [0.2.0] - 2021-10-25
 
 - Integrate nlohmann/json library v3.10.4 for JSON parsing
   - Get rid of jsoncpp as external dependency
