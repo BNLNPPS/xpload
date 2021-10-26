@@ -6,7 +6,7 @@
 #include <vector>
 
 #include <curl/curl.h>
-#include <json/json.h>
+#include <nlohmann/json.hpp>
 
 #include "xpload/configurator.h"
 #include "xpload/fetch.h"
@@ -56,26 +56,26 @@ std::vector<std::string> fetch(std::string tag, uint64_t timestamp, const Config
 
     if (http_code != CURLE_HTTP_RETURNED_ERROR)
     {
-      Json::CharReaderBuilder builder;
-      const std::unique_ptr<Json::CharReader> json_reader(builder.newCharReader());
-
-      Json::Value  json_data;
-      Json::String json_err;
-
-      if (json_reader->parse(http_data.c_str(), http_data.c_str() + http_data.length(), &json_data, &json_err))
+      try
       {
+        nlohmann::json json = nlohmann::json::parse(http_data);
+
         std::vector<std::string> paths;
 
-        for (const auto& v : json_data)
-          paths.push_back(cfg.db.path + '/' + v["payload_iov"][0]["payload_url"].asString());
+        for (const auto& j : json)
+          paths.push_back(cfg.db.path + '/' + j["payload_iov"][0]["payload_url"].get<std::string>());
 
         return paths;
       }
-      else
+      catch (nlohmann::json::exception& e)
+      {
+        std::cerr << "Error: " << e.what() << '\n';
         return {};
-    }
-    else
+      }
+
+    } else {
       return {};
+    }
   }
 
   curl_global_cleanup();

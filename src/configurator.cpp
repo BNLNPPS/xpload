@@ -5,7 +5,7 @@
 #include <sys/stat.h>
 #include <vector>
 
-#include <json/json.h>
+#include <nlohmann/json.hpp>
 
 #include "xpload/configurator.h"
 #include "config.h"
@@ -73,23 +73,19 @@ std::string Configurator::Locate(std::string filename) const
  */
 std::string Configurator::ReadConfig(std::string filepath)
 {
-  Json::CharReaderBuilder builder;
-  Json::String error;
-  Json::Value json;
+  nlohmann::json json;
 
-  std::ifstream ifs(filepath);
-
-  if ( !Json::parseFromStream(builder, ifs, &json, &error) )
+  try
   {
-    return error;
+    std::ifstream ifs(filepath);
+    ifs >> json;
+  }
+  catch (nlohmann::json::exception& e)
+  {
+    std::cerr << "Error: " << e.what() << '\n';
   }
 
-  db = {
-    json["host"].asString(),
-    json["apiroot"].asString(),
-    json["port"].asString(),
-    json["path"].asString()
-  };
+  db = { json["host"], json["apiroot"], json["port"], json["path"] };
 
   return {};
 }
