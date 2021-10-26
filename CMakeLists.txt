@@ -57,6 +57,11 @@ install(
     DESTINATION ${XPLOAD_CMAKE_CONFIG_INSTALL_DIR}
 )
 
+install(
+    DIRECTORY "${CMAKE_SOURCE_DIR}/config"
+    DESTINATION ${XPLOAD_DATA_INSTALL_DIR}
+)
+
 
 # Set up tests
 include(CTest)
