@@ -7,7 +7,7 @@ set(source_files
 )
 
 add_library(xpload ${source_files})
-target_link_libraries(xpload PUBLIC CURL::libcurl jsoncpp_lib)
+target_link_libraries(xpload PUBLIC CURL::libcurl)
 
 target_include_directories(xpload
     INTERFACE

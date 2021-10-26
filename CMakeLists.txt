@@ -27,7 +27,6 @@ set(XPLOAD_CMAKE_CONFIG_INSTALL_DIR "${CMAKE_INSTALL_DATADIR}/xpload-${XPLOAD_VE
 
 # Set up external dependencies
 find_package(CURL REQUIRED)
-find_package(jsoncpp REQUIRED)
 
 add_subdirectory(src)
 
