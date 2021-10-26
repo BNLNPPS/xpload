@@ -19,6 +19,7 @@ set(XPLOAD_ARCHIVE_INSTALL_DIR      "${CMAKE_INSTALL_LIBDIR}")
 set(XPLOAD_FRAMEWORK_INSTALL_DIR    "${CMAKE_INSTALL_LIBDIR}")
 set(XPLOAD_DATA_INSTALL_DIR         "${CMAKE_INSTALL_DATADIR}/xpload")
 set(XPLOAD_CMAKE_CONFIG_INSTALL_DIR "${CMAKE_INSTALL_DATADIR}/xpload/cmake")
+set(XPLOAD_CMAKE_CONFIG_TEMPLATE      "cmake/Config.cmake.in")
 
 # Set up external dependencies
 find_package(CURL REQUIRED)
@@ -30,7 +31,7 @@ include(CMakePackageConfigHelpers)
 
 # Generate the config file that is includes the exports
 set(config_file "${CMAKE_CURRENT_BINARY_DIR}/xploadConfig.cmake")
-configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
+configure_package_config_file(${XPLOAD_CMAKE_CONFIG_TEMPLATE}
     ${config_file}
     INSTALL_DESTINATION ${XPLOAD_CMAKE_CONFIG_INSTALL_DIR}
     NO_SET_AND_CHECK_MACRO
