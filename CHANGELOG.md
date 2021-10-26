@@ -1,5 +1,14 @@
 # Changelog
 
+
+## [0.2.0] - 2021-10-21
+
+- Integrate nlohmann/json library v3.10.4 for JSON parsing
+  - Get rid of jsoncpp as external dependency
+- Update CI to build and run the Django web app from plexoos/npdb fork
+- Introduce a basic test with CTest and include into CI
+
+
 ## [0.1.0] - 2021-10-21
 
 Initial implementation with an example illustrating the basic usage
