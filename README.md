@@ -24,7 +24,7 @@ Install the package
 
 ## Usage
 
-See `xpload/example/xclient.cpp`
+See `example/xclient.cpp`
 
 ```c++
 #include <xpload/xpload.h>
@@ -39,3 +39,9 @@ vector<string> paths = xpload::fetch(tag, timestamp);
 for (const string& path : paths)
   cout << path << '\n';
 ```
+
+Configuration files with database connection parameters can be found in
+`config/` under the source tree or `<prefix>/share` when installed. To pick
+other than default `xpload.json` configuration file from these locations one can
+set the `XPLOAD_CONFIG_NAME` environment variable, e.g.
+`XPLOAD_CONFIG_NAME=xpload_test`
