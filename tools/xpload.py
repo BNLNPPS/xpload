@@ -77,12 +77,65 @@ def fetch_entries(component: str, tag_id: int = None):
     return entries
 
 
+def push_payload(tag: str, domain: str, payload: str, start: int = 0):
+    """ Inserts an entry into corresponding tables """
+
+    # Get all tags
+    tags = fetch_entries("tags")
+    # Select the last matching entry
+    existing_tag = next((e for e in reversed(tags) if e['name'] == tag), None)
+
+    # Get all domains
+    domains = fetch_entries("domains")
+    last_domain_id = int(domains[-1]['id']) if domains else 0
+    # Select the last matching entry
+    existing_domain = next((e for e in reversed(domains) if e['name'] == domain), None)
+
+    # If the tag does not exist create one
+    if existing_tag is None:
+        tag_id = create_tag(tag)
+        print(f"Tag {tag} does not exist. Created {tag_id}")
+    else:
+        tag_id = existing_tag['id']
+
+    # If the domain does not exist create one
+    if existing_domain is None:
+        domain_id = create_domain(domain, last_domain_id+1)
+        print(f"Domain {domain} does not exist. Created {domain_id}")
+    else:
+        domain_id = existing_domain['id']
+
+    # Check if domain_list with tag_id and domain_id exists
+    domain_lists = fetch_entries("domain_lists")
+    # Select the last matching entry
+    existing_domain_list = next((e for e in reversed(domain_lists) if e['global_tag'] == tag_id and e['payload_type'] == domain_id), None)
+
+    # If either tag or domain did not exist, create a new domain_list
+    if existing_tag is None or existing_domain is None or existing_domain_list is None:
+        name = f"{tag}_{domain}"
+        domain_list_id = create_domain_list(name, tag_id, domain_id)
+    else:
+        domain_list_id = existing_domain_list['id']
+
+    # Get all payloads
+    payloads = fetch_entries("payloads")
+    # Select the last matching entry
+    existing_payload = next((e for e in reversed(payloads) if e['payload_url'] == payload and e['payload_list'] == domain_list_id), None)
+
+    if existing_payload is None:
+        payload_id = create_payload(payload, domain_list_id, start)
+        print(f"Payload {payload} does not exist. Created {payload_id}")
+
+
 def act_on(args):
     if args.action == 'show':
         result = fetch_entries(args.component, args.id)
         if result:
             print(f"Found {len(result)} entries")
             print(json.dumps(result, indent=4))
+
+    if args.action == 'push':
+        push_payload(args.tag, args.domain, args.payload, args.start)
 
 
 if __name__ == "__main__":
@@ -97,6 +150,13 @@ if __name__ == "__main__":
     parser_show = subparsers.add_parser("show", help="Show entries")
     parser_show.add_argument("component", type=str, choices=['tags', 'domains', 'payloads'], help="Pick a list to show available entries")
     parser_show.add_argument("--id", type=int, default=None, help="Unique id")
+
+    # Action: push
+    parser_push = subparsers.add_parser("push", help="Insert entry")
+    parser_push.add_argument("tag", type=str, help="Tag for the payload file")
+    parser_push.add_argument("domain", type=str, help="Domain of the payload file")
+    parser_push.add_argument("payload", type=str, help=f"Payload file name")
+    parser_push.add_argument("-s", "--start", type=int, default=0, help="Start of interval when the payload is applied")
 
     args = parser.parse_args()
 
