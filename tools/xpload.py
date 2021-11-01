@@ -40,6 +40,49 @@ class DbConfig(namedtuple('DbConfig', ['host', 'port', 'apiroot', 'path'])):
 db = json.loads(db_params_json, object_hook=lambda d: DbConfig(**d))
 
 
+def _post_data(endpoint: str, params: dict):
+    """ Post data to the endpoint """
+
+    if endpoint not in ['gttype', 'gtstatus', 'gt', 'pt', 'pl', 'piov']:
+        print(f"Error: Wrong endpoint {endpoint}")
+        return None
+
+    url = db.url() + "/" + endpoint
+
+    try:
+        response = requests.post(url=url, json=params)
+        respjson = response.json()
+    except:
+        print(f"Error: Something went wrong while posting data to {url}")
+        return None
+
+    try:
+        jsonschema.validate(respjson, general_schema['definitions']['entry'])
+    except:
+        print(f"Error: Encountered invalid response")
+        return None
+
+    return respjson['id']
+
+
+def create_tag_type(name="test"):
+    return _post_data('gttype', {"name": name, "id": 1})
+
+def create_tag_status(name="test"):
+    return _post_data('gtstatus', {"name": name, "id": 1})
+
+def create_tag(name):
+    return _post_data('gt', {"name": name})
+
+def create_domain(name, id):
+    return _post_data('pt', {"name": name, "id": id})
+
+def create_domain_list(name, tag_id, domain_id):
+    return _post_data('pl', {"name": name, "global_tag": tag_id, "payload_type": domain_id})
+
+def create_payload(name, domain_list_id, start):
+    return _post_data('piov', {"payload_url": name, "payload_list": domain_list_id, "major_iov": 0, "minor_iov": start})
+
 
 def fetch_entries(component: str, tag_id: int = None):
     """ Fetch and print entries from respective table """
