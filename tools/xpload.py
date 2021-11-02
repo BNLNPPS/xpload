@@ -2,16 +2,9 @@
 
 import json
 import jsonschema
+import os
 import requests
-
-db_params_json = """
-{
-  "host":    "localhost",
-  "port":    "8000",
-  "apiroot": "/api/cdb_rest",
-  "path":    "/path/to/payload/data"
-}
-"""
+import sys
 
 general_schema = {
     "definitions" : {
@@ -37,7 +30,38 @@ class DbConfig(namedtuple('DbConfig', ['host', 'port', 'apiroot', 'path'])):
     def url(self):
         return "http://" + self.host + ':' + self.port + self.apiroot
 
-db = json.loads(db_params_json, object_hook=lambda d: DbConfig(**d))
+
+def config_db(config_name):
+    """ Read database parameters from a json config file """
+
+    # Use user supplied config as is if it looks like a "path"
+    if "." in config_name or "/" in config_name:
+        with open(f"{config_name}") as cfgf:
+            return json.load(cfgf, object_hook=lambda d: DbConfig(**d))
+
+    XPLOAD_DIR = os.getenv('XPLOAD_DIR', "")
+    XPLOAD_CONFIG_NAME = os.getenv('XPLOAD_CONFIG_NAME', "xpload")
+    XPLOAD_CONFIG_SEARCH_PATHS = [".", "config"]
+
+    if XPLOAD_DIR:
+        search_paths = [f"{XPLOAD_DIR.rstrip('/')}/{cfgpath}" for cfgpath in XPLOAD_CONFIG_SEARCH_PATHS] + XPLOAD_CONFIG_SEARCH_PATHS
+    else:
+        search_paths = XPLOAD_CONFIG_SEARCH_PATHS
+
+    if config_name:
+        config_file = f"{config_name}.json"
+    else:
+        config_file = f"{XPLOAD_CONFIG_NAME}.json"
+
+    for config_path in search_paths:
+        try:
+            with open(f"{config_path}/{config_file}") as cfgf:
+                return json.load(cfgf, object_hook=lambda d: DbConfig(**d))
+        except:
+            pass
+
+    print(f"Error: Cannot find config file {config_file} in", search_paths)
+    return []
 
 
 def _post_data(endpoint: str, params: dict):
@@ -185,6 +209,7 @@ if __name__ == "__main__":
     """ Main entry point for xpload utility """
     import argparse
     parser = argparse.ArgumentParser(description="Manipulate payload entries")
+    parser.add_argument("-c", "--config", type=str, default="", help="Config file with database connection parameters")
 
     # Parse various actions
     subparsers = parser.add_subparsers(dest="action", required=True)
@@ -202,5 +227,11 @@ if __name__ == "__main__":
     parser_push.add_argument("-s", "--start", type=int, default=0, help="Start of interval when the payload is applied")
 
     args = parser.parse_args()
+
+    global db
+    db = config_db(args.config)
+
+    if not db:
+        sys.exit(os.EX_CONFIG)
 
     act_on(args)
