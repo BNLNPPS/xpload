@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.0] - 2021-11-02
+
+- Add xpload.py tool to push new and fetch existing entries to and from database
+
 ## [0.2.1] - 2021-10-26
 
 - Update documentation and the project installation tree
