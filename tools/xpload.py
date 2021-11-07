@@ -40,7 +40,7 @@ def config_db(config_name):
             return json.load(cfgf, object_hook=lambda d: DbConfig(**d))
 
     XPLOAD_DIR = os.getenv('XPLOAD_DIR', "")
-    XPLOAD_CONFIG_NAME = os.getenv('XPLOAD_CONFIG_NAME', "xpload")
+    XPLOAD_CONFIG_NAME = os.getenv('XPLOAD_CONFIG_NAME', "test")
     XPLOAD_CONFIG_SEARCH_PATHS = [".", "config"]
 
     if XPLOAD_DIR:
