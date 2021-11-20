@@ -10,7 +10,7 @@ int main()
 {
   using namespace std;
 
-  string tag = "TestSmallGT2";
+  string tag = "example_tag_1";
   uint64_t timestamp = 9999999999;
 
   vector<string> paths = xpload::fetch(tag, timestamp);

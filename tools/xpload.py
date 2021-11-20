@@ -131,7 +131,7 @@ def fetch_entries(component: str, tag_id: int = None):
         response = requests.get(url)
         respjson = response.json()
     except:
-        print(f"Error: Something went wrong while looking for tag id {tag_id}. Check", db.url())
+        print(f"Error: Something went wrong while looking for tag id {tag_id} in {component}. Check", url)
         return []
 
     # Always return a list
@@ -154,18 +154,18 @@ def push_payload(tag: str, domain: str, payload: str, start: int = 0):
     # Select the last matching entry
     existing_tag = next((e for e in reversed(tags) if e['name'] == tag), None)
 
-    # Get all domains
-    domains = fetch_entries("domains")
-    last_domain_id = int(domains[-1]['id']) if domains else 0
-    # Select the last matching entry
-    existing_domain = next((e for e in reversed(domains) if e['name'] == domain), None)
-
     # If the tag does not exist create one
     if existing_tag is None:
         tag_id = create_tag(tag)
         print(f"Tag {tag} does not exist. Created {tag_id}")
     else:
         tag_id = existing_tag['id']
+
+    # Get all domains
+    domains = fetch_entries("domains")
+    last_domain_id = int(domains[-1]['id']) if domains else 0
+    # Select the last matching entry
+    existing_domain = next((e for e in reversed(domains) if e['name'] == domain), None)
 
     # If the domain does not exist create one
     if existing_domain is None:
@@ -214,7 +214,7 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--config", type=str, default="", help="Config file with database connection parameters")
 
     # Parse various actions
-    subparsers = parser.add_subparsers(dest="action", required=True)
+    subparsers = parser.add_subparsers(dest="action", required=True, help="Choose one of the actions")
 
     # Action: show
     parser_show = subparsers.add_parser("show", help="Show entries")
@@ -222,7 +222,7 @@ if __name__ == "__main__":
     parser_show.add_argument("--id", type=int, default=None, help="Unique id")
 
     # Action: push
-    parser_push = subparsers.add_parser("push", help="Insert entry")
+    parser_push = subparsers.add_parser("push", help="Insert an entry")
     parser_push.add_argument("tag", type=str, help="Tag for the payload file")
     parser_push.add_argument("domain", type=str, help="Domain of the payload file")
     parser_push.add_argument("payload", type=str, help=f"Payload file name")
