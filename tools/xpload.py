@@ -90,19 +90,21 @@ def _post_data(endpoint: str, params: dict):
 
 
 def create_tag_type(name="test"):
-    return _post_data('gttype', {"name": name, "id": 1})
+    return _post_data('gttype', {"name": name})
 
 def create_tag_status(name="test"):
-    return _post_data('gtstatus', {"name": name, "id": 1})
+    return _post_data('gtstatus', {"name": name})
 
 def create_tag(name):
-    return _post_data('gt', {"name": name})
+    type_id = create_tag_type()
+    status_id = create_tag_status()
+    return _post_data('gt', {"name": name, "status": status_id, "type": type_id})
 
-def create_domain(name, id):
-    return _post_data('pt', {"name": name, "id": id})
+def create_domain(name):
+    return _post_data('pt', {"name": name})
 
-def create_domain_list(name, tag_id, domain_id):
-    return _post_data('pl', {"name": name, "global_tag": tag_id, "payload_type": domain_id})
+def create_domain_list(tag_id, domain_id):
+    return _post_data('pl', {"global_tag": tag_id, "payload_type": domain_id})
 
 def create_payload(name, domain_list_id, start):
     return _post_data('piov', {"payload_url": name, "payload_list": domain_list_id, "major_iov": 0, "minor_iov": start})
@@ -167,7 +169,7 @@ def push_payload(tag: str, domain: str, payload: str, start: int = 0):
 
     # If the domain does not exist create one
     if existing_domain is None:
-        domain_id = create_domain(domain, last_domain_id+1)
+        domain_id = create_domain(domain)
         print(f"Domain {domain} does not exist. Created {domain_id}")
     else:
         domain_id = existing_domain['id']
@@ -180,7 +182,7 @@ def push_payload(tag: str, domain: str, payload: str, start: int = 0):
     # If either tag or domain did not exist, create a new domain_list
     if existing_tag is None or existing_domain is None or existing_domain_list is None:
         name = f"{tag}_{domain}"
-        domain_list_id = create_domain_list(name, tag_id, domain_id)
+        domain_list_id = create_domain_list(tag_id, domain_id)
     else:
         domain_list_id = existing_domain_list['id']
 
