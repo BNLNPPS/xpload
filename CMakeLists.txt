@@ -29,6 +29,7 @@ set(XPLOAD_CMAKE_PROJECT_CONFIG_FILE  "${XPLOAD_CMAKE_CONFIG_DIR}/${PROJECT_NAME
 find_package(CURL REQUIRED)
 
 add_subdirectory(src)
+add_subdirectory(tools)
 
 # Install files and export configs
 include(CMakePackageConfigHelpers)
