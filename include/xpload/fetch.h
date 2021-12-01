@@ -8,5 +8,6 @@
 namespace xpload {
 
 std::vector<std::string> fetch(std::string tag, uint64_t timestamp);
+std::vector<std::string> fetch(std::string tag, uint64_t timestamp, const Configurator& cfg);
 
 }
