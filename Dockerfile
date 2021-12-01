@@ -2,7 +2,7 @@ FROM centos:8 AS build-stage
 
 SHELL ["/bin/bash", "--login", "-c"]
 
-RUN dnf install -y gcc-toolset-10-gcc-c++ openssl-devel \
+RUN dnf install -y python3.9 gcc-toolset-10-gcc-c++ openssl-devel \
  && echo "source /opt/rh/gcc-toolset-10/enable" >> /etc/bashrc
 
 # Install CMake and curl
