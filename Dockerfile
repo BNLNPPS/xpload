@@ -24,6 +24,8 @@ FROM centos:8 AS run-stage
 
 SHELL ["/bin/bash", "-c"]
 
-COPY --from=build-stage /usr/lib64 /usr/lib64
-COPY --from=build-stage /build /build
-COPY --from=build-stage /usr/local/share/xpload-0.1.0 /usr/local/share/xpload-0.1.0
+COPY --from=build-stage /usr/local/bin/xpl            /usr/local/bin/xpl
+COPY --from=build-stage /usr/local/include/xpload     /usr/local/include/xpload
+COPY --from=build-stage /usr/local/lib64/libxpload*   /usr/local/lib64/
+COPY --from=build-stage /usr/local/lib64/cmake/xpload /usr/local/lib64/cmake/xpload
+COPY --from=build-stage /usr/local/share/xpload       /usr/local/share/xpload
