@@ -1,0 +1,1 @@
+XPLOAD_CONFIG_SEARCH_PATHS = ["./", "@XPLOAD_DATA_INSTALL_DIR@/config", "@XPLOAD_DATA_INSTALL_DIR_FULL@/config", "@xpload_SOURCE_DIR@/config"]

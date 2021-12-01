@@ -43,6 +43,11 @@ def config_db(config_name):
     XPLOAD_CONFIG_NAME = os.getenv('XPLOAD_CONFIG_NAME', "test")
     XPLOAD_CONFIG_SEARCH_PATHS = [".", "config"]
 
+    try:
+        from xpload_config import XPLOAD_CONFIG_SEARCH_PATHS
+    except ImportError:
+        pass
+
     if XPLOAD_DIR:
         search_paths = [f"{XPLOAD_DIR.rstrip('/')}/{cfgpath}" for cfgpath in XPLOAD_CONFIG_SEARCH_PATHS] + XPLOAD_CONFIG_SEARCH_PATHS
     else:
