@@ -15,12 +15,12 @@ Get the code
 
 Configure and build the package
 
-    cmake -S xpload -B build
+    cmake -S xpload -B build -DCMAKE_INSTALL_PREFIX=path/to/where/install
     cmake --build build
 
 Install the package
 
-    cmake --install build --prefix /path/to/where/install
+    cmake --install build
 
 
 ## Usage
