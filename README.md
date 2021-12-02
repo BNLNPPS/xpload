@@ -72,7 +72,8 @@ xpload -c prod push tag1 domain1 payload1
 
 ### In a C++ client
 
-See `example/xclient.cpp`
+Here is a code snippet to give a general idea of how the library can be used on
+the client side:
 
 ```c++
 #include <xpload/xpload.h>
@@ -86,6 +87,17 @@ vector<string> paths = xpload::fetch(tag, timestamp);
 
 for (const string& path : paths)
   cout << path << '\n';
+```
+
+We also provide a fully functional example that can be built and executed for
+testing purposes. Assuming the steps of installing the xpload package were
+followed in the `Quick start` section one can simply do from the same location:
+
+```shell
+cmake -S xpload/example -B build-example -DCMAKE_INSTALL_PREFIX=path/to/where/install
+cmake --build build-example
+cmake --install build-example
+xclient
 ```
 
 Configuration files with database connection parameters can be found in
