@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0] - 2021-12-01
+
+- CLI tool xpl is now installed by CMake
+- Example updated to accept command line options
+- Documentation updated
+
+
 ## [0.4.0] - 2021-11-24
 
 - Update xpload.py to match changed API in plexoos/npdb:develop repository
