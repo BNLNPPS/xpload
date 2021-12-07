@@ -26,6 +26,25 @@ general_schema = {
 
 from collections import namedtuple
 
+
+def nestednamedtuple(obj):
+    """ Returns nested list of namedtuples """
+
+    if isinstance(obj, dict):
+        fields = obj.keys()
+        namedtuple_type = namedtuple(typename='NNTuple', field_names=fields)
+        field_value_pairs = {str(field): nestednamedtuple(obj[field]) for field in fields}
+        try:
+            return namedtuple_type(**field_value_pairs)
+        except TypeError:
+            # If namedtuple cannot be created fallback to dict
+            return dict(**field_value_pairs)
+    elif isinstance(obj, (list, set, tuple, frozenset)):
+        return [nestednamedtuple(item) for item in obj]
+    else:
+        return obj
+
+
 class DbConfig(namedtuple('DbConfig', ['host', 'port', 'apiroot', 'path'])):
     def url(self):
         return "http://" + self.host + ':' + self.port + self.apiroot
