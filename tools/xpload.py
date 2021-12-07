@@ -254,7 +254,20 @@ def act_on(args):
         push_payload(args.tag, args.domain, args.payload, args.start)
 
     if args.action == 'fetch':
-        fetch_payloads(args.tag, args.timestamp)
+        respjson = fetch_payloads(args.tag, args.timestamp)
+        pprint_payload(respjson, args.dump)
+
+
+def pprint_payload(respjson, dump: bool):
+    """ Pretty print payload entries """
+
+    if dump:
+        print(json.dumps(respjson, indent=4))
+    else:
+        objs = nestednamedtuple(respjson)
+        for o in objs:
+            for p in o.payload_iov:
+                print(f"{o.id} {o.name} {p.payload_url} {p.minor_iov}")
 
 
 if __name__ == "__main__":
@@ -262,6 +275,7 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Manipulate payload entries")
     parser.add_argument("-c", "--config", type=str, default="", help="Config file with database connection parameters")
+    parser.add_argument("-d", "--dump", action='store_true', default=False, help="Dump response as json instead of pretty printing it")
 
     # Parse various actions
     subparsers = parser.add_subparsers(dest="action", required=True, help="Choose one of the actions")
