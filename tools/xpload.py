@@ -151,6 +151,29 @@ def fetch_entries(component: str, tag_id: int = None):
     return entries
 
 
+def fetch_payloads(tag: str, timestamp: int):
+
+    url = f"{db.url()}/payloadiovs/?gtName={tag}&majorIOV=0&minorIOV={timestamp}"
+
+    try:
+        response = requests.get(url)
+        respjson = response.json()
+    except:
+        print(f"Error: Something went wrong while looking for tag {tag} and timestamp {timestamp}. Check", url)
+        return []
+
+    # Always return a list
+    entries = respjson if isinstance(respjson, list) else [respjson]
+
+    try:
+        jsonschema.validate(entries, general_schema)
+    except:
+        print(f"Error: Encountered invalid response. Tag {tag} may not exist")
+        return []
+
+    return entries
+
+
 def push_payload(tag: str, domain: str, payload: str, start: int = 0):
     """ Inserts an entry into corresponding tables """
 
@@ -211,6 +234,9 @@ def act_on(args):
     if args.action == 'push':
         push_payload(args.tag, args.domain, args.payload, args.start)
 
+    if args.action == 'fetch':
+        fetch_payloads(args.tag, args.timestamp)
+
 
 if __name__ == "__main__":
     """ Main entry point for xpload utility """
@@ -232,6 +258,11 @@ if __name__ == "__main__":
     parser_push.add_argument("domain", type=str, help="Domain of the payload file")
     parser_push.add_argument("payload", type=str, help=f"Payload file name")
     parser_push.add_argument("-s", "--start", type=int, default=0, help="Start of interval when the payload is applied")
+
+    # Action: fetch
+    parser_fetch = subparsers.add_parser("fetch", help="Fetch entries")
+    parser_fetch.add_argument("tag", type=str, help="Tag for the payload file")
+    parser_fetch.add_argument("timestamp", type=int, default=0, help="Timestamp of DAQ data")
 
     args = parser.parse_args()
 
