@@ -11,7 +11,7 @@
 
 Get the code
 
-    git clone https://github.com/plexoos/xpload.git
+    git clone https://github.com/BNLNPPS/xpload.git
 
 Configure and build the package
 
