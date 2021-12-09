@@ -182,15 +182,15 @@ def fetch_payloads(tag: str, timestamp: int):
         return []
 
     # Always return a list
-    entries = respjson if isinstance(respjson, list) else [respjson]
+    respjson = respjson if isinstance(respjson, list) else [respjson]
 
     try:
-        jsonschema.validate(entries, general_schema)
+        jsonschema.validate(respjson, general_schema)
     except:
         print(f"Error: Encountered invalid response. Tag {tag} may not exist")
         return []
 
-    return entries
+    return respjson
 
 
 def push_payload(tag: str, domain: str, payload: str, start: int = 0):
