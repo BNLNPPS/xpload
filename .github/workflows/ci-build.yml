@@ -62,4 +62,6 @@ jobs:
           load: true
 
       - name: Run Tests
-        run: docker run --network=host ghcr.io/bnlnpps/xpload-build /bin/bash -c "ctest --test-dir build -VV"
+        run: |
+             docker run --rm --network=host -e XPLOAD_CONFIG_NAME=dev ghcr.io/bnlnpps/xpload-build xpload/example/db_init_sphenix.sh
+             docker run --network=host ghcr.io/bnlnpps/xpload-build ctest --test-dir build -V
