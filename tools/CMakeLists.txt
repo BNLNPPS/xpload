@@ -12,6 +12,7 @@ add_custom_command(
       && python -m pip install pyinstaller -r requirements.txt
       && pyinstaller --onefile -n xpl --distpath . xpload.py
       && deactivate
+    DEPENDS xpload.py xpload_config.py.in requirements.txt
 )
 
 add_custom_target(xpl ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/xpl")
