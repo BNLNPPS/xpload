@@ -7,6 +7,11 @@
 #include "arg_parser.h"
 
 
+/**
+ * Usage:
+ *
+ * $ test_xpload -c <config_name> -t <tag> -s <timestamp>
+ */
 int main(int argc, char *argv[])
 {
   using namespace std;
@@ -19,10 +24,13 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  string tag = arg_parser.get_value("--gtName");
-  uint64_t timestamp = stol(arg_parser.get_value("--minorIOV"));
+  string cfg(arg_parser.get_value("-c"));
+  string tag(arg_parser.get_value("-t"));
+  uint64_t timestamp = stoul(arg_parser.get_value("-s"));
 
-  vector<string> paths = xpload::fetch(tag, timestamp);
+  xpload::Configurator config(cfg);
+
+  vector<string> paths = xpload::fetch(tag, timestamp, config);
 
   if (paths.empty())
   {
@@ -34,4 +42,4 @@ int main(int argc, char *argv[])
     cout << path << '\n';
 
   return EXIT_SUCCESS;
-} 
+}

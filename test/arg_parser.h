@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cstdint>
 #include <iostream>
 #include <iterator>
 #include <string>
@@ -38,26 +39,25 @@ std::string ArgParser::get_value(const std::string &option) const
 {
   auto itr = std::find(args.begin(), args.end(), option);
 
+  std::string value{""};
+
   if (itr != args.end() && std::next(itr) != args.end() && (*++itr)[0] != '-') {
-    return *itr;
+    value = *itr;
   }
-  return "";
+
+  // Default values
+  if (value.empty() && option == "-c") return "test";
+  if (value.empty() && option == "-t") return "";
+  if (value.empty() && option == "-s") return std::to_string(UINT64_MAX);
+
+  return value;
 }
 
 
 bool ArgParser::verify()
 {
-  std::string tag = get_value("--gtName");
-
-  if (tag.empty()) {
-    std::cerr << "Error: --gtName option must be set\n";
-    return false;
-  }
-
-  std::string timestamp = get_value("--minorIOV");
-
-  if (timestamp.empty()) {
-    std::cerr << "Error: --minorIOV option must be set\n";
+  if (get_value("-t").empty()) {
+    std::cerr << "Error: -t option must be set\n";
     return false;
   }
 
@@ -67,5 +67,5 @@ bool ArgParser::verify()
 
 void ArgParser::usage()
 {
-  std::cout << "Usage: " << args[0] << " --gtName <tag> --minorIOV <timestamp>\n";
+  std::cout << "Usage: " << args[0] << " -c <config_name> -t <tag> -s <timestamp>\n";
 }
