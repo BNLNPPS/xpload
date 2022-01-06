@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.0] - 2022-01-12
+
+- Added a test to simulate real jobs with multiple calls fetching payload
+  information from the database
+- The primary API function xpload::fetch() now accepts another parameter
+  `domain` in order to select payloads belonging to that specific type
+  - xpload::fetch() now returns a struct which can be further extended to return
+    other useful information
+  - Example and tests were updated accordingly
+- New configuration options added for verbosity and cached calls
+
+
 ## [0.5.0] - 2021-12-01
 
 - CLI tool xpl is now installed by CMake
