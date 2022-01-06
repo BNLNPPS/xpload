@@ -184,12 +184,6 @@ def fetch_payloads(tag: str, timestamp: int):
     # Always return a list
     respjson = respjson if isinstance(respjson, list) else [respjson]
 
-    try:
-        jsonschema.validate(respjson, general_schema)
-    except:
-        print(f"Error: Encountered invalid response. Tag {tag} may not exist")
-        return []
-
     return respjson
 
 
@@ -266,8 +260,8 @@ def pprint_payload(respjson, dump: bool):
     else:
         objs = nestednamedtuple(respjson)
         for o in objs:
-            for p in o.payload_iov:
-                print(f"{o.id} {o.name} {p.payload_url} {p.minor_iov}")
+            for p in o.payloads:
+                print(f"{o.domain} {o.hexhash} {p.name} {p.start}")
 
 
 if __name__ == "__main__":

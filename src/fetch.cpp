@@ -65,7 +65,7 @@ std::vector<std::string> fetch(std::string tag, std::string domain, uint64_t tim
         for (const auto& j : json) {
           if (!domain.empty() && j["domain"] != domain)
              continue;
-          paths.push_back(cfg.db.path + '/' + j["payload_iov"][0]["payload_url"].get<std::string>());
+          paths.push_back(cfg.db.path + '/' + j["payloads"][0]["name"].get<std::string>());
         }
 
         return paths;
