@@ -26,11 +26,12 @@ int main(int argc, char *argv[])
 
   string cfg(arg_parser.get_value("-c"));
   string tag(arg_parser.get_value("-t"));
+  string domain("");
   uint64_t timestamp = stoul(arg_parser.get_value("-s"));
 
   xpload::Configurator config(cfg);
 
-  vector<string> paths = xpload::fetch(tag, timestamp, config);
+  vector<string> paths = xpload::fetch(tag, domain, timestamp, config);
 
   if (paths.empty())
   {

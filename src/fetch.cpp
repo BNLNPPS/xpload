@@ -23,7 +23,7 @@ std::size_t save_data(const char* input, std::size_t chunk_size, std::size_t n_c
 }
 
 
-std::vector<std::string> fetch(std::string tag, uint64_t timestamp, const Configurator& cfg)
+std::vector<std::string> fetch(std::string tag, std::string domain, uint64_t timestamp, const Configurator& cfg, bool use_cache)
 {
   curl_version_info_data *curlver_data = curl_version_info(CURLVERSION_NOW);
   std::string useragent{"curl/" + std::string(curlver_data->version)};
@@ -62,8 +62,11 @@ std::vector<std::string> fetch(std::string tag, uint64_t timestamp, const Config
 
         std::vector<std::string> paths;
 
-        for (const auto& j : json)
+        for (const auto& j : json) {
+          if (!domain.empty() && j["domain"] != domain)
+             continue;
           paths.push_back(cfg.db.path + '/' + j["payload_iov"][0]["payload_url"].get<std::string>());
+        }
 
         return paths;
       }
@@ -81,13 +84,6 @@ std::vector<std::string> fetch(std::string tag, uint64_t timestamp, const Config
   curl_global_cleanup();
 
   return {};
-}
-
-
-std::vector<std::string> fetch(std::string tag, uint64_t timestamp)
-{
-  Configurator cfg;
-  return fetch(tag, timestamp, cfg);
 }
 
 }
