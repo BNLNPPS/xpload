@@ -23,7 +23,7 @@ std::size_t save_data(const char* input, std::size_t chunk_size, std::size_t n_c
 }
 
 
-Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Configurator& cfg, bool use_cache)
+Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Configurator& cfg)
 {
   Result result;
 
@@ -38,7 +38,8 @@ Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Conf
     std::ostringstream url;
     url << cfg.db.url() << "/payloadiovs/?gtName=" << tag << "&majorIOV=0&minorIOV=" << timestamp;
 
-    std::cout << "url: " << url.str() << '\n';
+    if (cfg.db.verbosity > 0)
+      std::cout << "url: " << url.str() << '\n';
 
     long http_code(0);
     std::string http_data;

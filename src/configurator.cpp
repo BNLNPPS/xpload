@@ -85,7 +85,7 @@ std::string Configurator::ReadConfig(std::string filepath)
     std::cerr << "Error: " << e.what() << '\n';
   }
 
-  db = { json["host"], json["apiroot"], json["port"], json["path"] };
+  db = { json["host"], json["apiroot"], json["port"], json["path"], json["use_cache"], json["verbosity"] };
 
   return {};
 }

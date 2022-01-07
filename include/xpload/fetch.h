@@ -14,6 +14,6 @@ struct Result
   size_t byte_count;
 };
 
-Result fetch(std::string tag, std::string domain = "", uint64_t timestamp = UINT64_MAX, const Configurator& cfg = Configurator(), bool use_cache = false);
+Result fetch(std::string tag, std::string domain = "", uint64_t timestamp = UINT64_MAX, const Configurator& cfg = Configurator());
 
 }

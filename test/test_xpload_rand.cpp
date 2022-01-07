@@ -116,7 +116,10 @@ int main(int argc, char *argv[])
       cerr << "Expected " << payload << " but got something else\n";
       return EXIT_FAILURE;
     } else {
-      cout << "OK in " << td.count() << " ms after " << segment << " s " << result.byte_count << " B \"" << result.paths[0] << "\"\n";
+      if (config.db.verbosity > 1)
+        cout << "OK in " << td.count() << " ms after " << segment << " s " << result.byte_count << " B \"" << result.paths[0] << "\"\n";
+      else if (config.db.verbosity > 0)
+        cout << td.count() << " " << segment << " " << result.byte_count << " \"" << result.paths[0] << "\"\n";
     }
   }
 
