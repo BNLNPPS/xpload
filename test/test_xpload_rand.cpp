@@ -106,17 +106,17 @@ int main(int argc, char *argv[])
     auto [timestamp, tag, domain, payload] = random_tokens({1, 10}, {1, 10}, {1, 10});
 
     auto t1 = chrono::high_resolution_clock::now();
-    vector<string> paths = xpload::fetch(tag, domain, timestamp, config);
+    xpload::Result result = xpload::fetch(tag, domain, timestamp, config);
     auto t2 = chrono::high_resolution_clock::now();
 
     chrono::duration<double, std::milli> td = t2 - t1;
 
-    if (paths.size() != 1 || paths[0] != config.db.path + "/" + payload)
+    if (result.paths.size() != 1 || result.paths[0] != config.db.path + "/" + payload)
     {
       cerr << "Expected " << payload << " but got something else\n";
       return EXIT_FAILURE;
     } else {
-      cout << "OK in " << td.count() << " ms after " << segment << " s " << paths[0] << "\n";
+      cout << "OK in " << td.count() << " ms after " << segment << " s " << result.byte_count << " B \"" << result.paths[0] << "\"\n";
     }
   }
 

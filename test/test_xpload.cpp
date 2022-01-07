@@ -31,15 +31,15 @@ int main(int argc, char *argv[])
 
   xpload::Configurator config(cfg);
 
-  vector<string> paths = xpload::fetch(tag, domain, timestamp, config);
+  xpload::Result result = xpload::fetch(tag, domain, timestamp, config);
 
-  if (paths.empty())
+  if (result.paths.empty())
   {
     cout << "No paths found\n";
     return EXIT_FAILURE;
   }
 
-  for (const string& path : paths) 
+  for (const string& path : result.paths)
     cout << path << '\n';
 
   return EXIT_SUCCESS;
