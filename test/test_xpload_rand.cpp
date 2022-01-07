@@ -67,10 +67,11 @@ auto random_tokens(std::pair<int, int> tag_range, std::pair<int, int> dom_range,
 /**
  * Usage:
  *
- * $ test_xpload_rand <b> <n>
+ * $ test_xpload_rand <b> <n> [seed]
  *
  * <b> is a positive integer defining a closed interval [0, b]
  * <n> is a number of calls to be made within the interval
+ * [seed] is a seed for the random number generator
  */
 int main(int argc, char *argv[])
 {
@@ -83,6 +84,7 @@ int main(int argc, char *argv[])
 
   int b = (args.size() > 0) ? stoi(args[0]) : 100;
   int n = (args.size() > 1) ? stoi(args[1]) : ceil(b/10.);
+  int seed = (args.size() > 2) ? stoi(args[2]) : 12345;
 
   vector<int> segments = split_interval(b, n);
 
@@ -92,7 +94,7 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  std::srand(12345);
+  std::srand(seed);
 
   string cfg = getenv("XPLOAD_CONFIG_NAME") ? string(getenv("XPLOAD_CONFIG_NAME")) : "dev";
   xpload::Configurator config(cfg);
