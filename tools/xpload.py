@@ -205,7 +205,7 @@ def fetch_payloads(tag: str, domain: str, start: int):
     return respjson
 
 
-def push_payload(tag: str, domain: str, payload: str, start: int = 0):
+def insert_payload(tag: str, domain: str, payload: str, start: int = 0):
     """ Inserts an entry into corresponding tables """
 
     # Select the last entry if exists or create a new default one
@@ -259,8 +259,8 @@ def act_on(args):
         respjson = fetch_entries(args.component, args.id)
         pprint_tags(respjson, args.dump)
 
-    if args.action == 'push':
-        push_payload(args.tag, args.domain, args.payload, args.start)
+    if args.action == 'insert':
+        insert_payload(args.tag, args.domain, args.payload, args.start)
 
     if args.action == 'fetch':
         respjson = fetch_payloads(args.tag, args.domain, args.start)
@@ -329,12 +329,12 @@ if __name__ == "__main__":
     parser_show.add_argument("component", type=str, choices=['tags', 'domains'], help="Pick a list to show available entries")
     parser_show.add_argument("--id", type=int, default=None, help="Unique id")
 
-    # Action: push
-    parser_push = subparsers.add_parser("push", help="Insert an entry")
-    parser_push.add_argument("tag", type=str, help="Tag for the payload file")
-    parser_push.add_argument("domain", type=str, help="Domain of the payload file")
-    parser_push.add_argument("payload", type=str, help=f"Payload file name")
-    parser_push.add_argument("-s", "--start", type=int, default=0, help="Start of interval when the payload is applied")
+    # Action: insert
+    parser_insert = subparsers.add_parser("insert", help="Insert an entry")
+    parser_insert.add_argument("tag", type=str, help="Tag for the payload file")
+    parser_insert.add_argument("domain", type=str, help="Domain of the payload file")
+    parser_insert.add_argument("payload", type=str, help=f"Payload file name")
+    parser_insert.add_argument("-s", "--start", type=int, default=0, help="Start of interval when the payload is applied")
 
     # Action: fetch
     parser_fetch = subparsers.add_parser("fetch", help="Fetch one or more payload entries")

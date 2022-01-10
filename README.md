@@ -35,7 +35,7 @@ payloads for various subsystems, we will also associated this payload with a
 global label called `tag1`.
 
 ```shell
-xpl push tag1 domain1 payload1
+xpl insert tag1 domain1 payload1
 ```
 
 Existing entries can be viewed with the following commands:
