@@ -176,19 +176,22 @@ def fetch_entries(component: str, tag_id: int = None):
     return entries
 
 
-def fetch_payloads(tag: str, timestamp: int):
+def fetch_payloads(tag: str, domain: str, start: int):
 
-    url = f"{db.url()}/payloadiovs/?gtName={tag}&majorIOV=0&minorIOV={timestamp}"
+    url = f"{db.url()}/payloadiovs/?gtName={tag}&majorIOV=0&minorIOV={start}"
 
     try:
         response = requests.get(url)
         respjson = response.json()
     except:
-        print(f"Error: Something went wrong while looking for tag {tag} and timestamp {timestamp}. Check", url)
+        print(f"Error: Something went wrong while looking for tag {tag} and start time {start}. Check", url)
         return []
 
     # Always return a list
     respjson = respjson if isinstance(respjson, list) else [respjson]
+
+    if domain:
+        respjson = [e for e in respjson if e['payload_type'] == domain]
 
     return respjson
 
@@ -252,7 +255,7 @@ def act_on(args):
         push_payload(args.tag, args.domain, args.payload, args.start)
 
     if args.action == 'fetch':
-        respjson = fetch_payloads(args.tag, args.timestamp)
+        respjson = fetch_payloads(args.tag, args.domain, args.start)
         pprint_payload(respjson, args.dump)
 
 
@@ -275,8 +278,8 @@ def pprint_payload(respjson, dump: bool):
     else:
         objs = nestednamedtuple(respjson)
         for o in objs:
-            for p in o.payloads:
-                print(f"{o.domain} {o.hexhash} {p.name} {p.start}")
+            for p in o.payload_iov:
+                print(f"{db.path.rstrip('/')}/{p.payload_url}")
 
 
 def NonEmptyStr(value: str):
@@ -326,9 +329,9 @@ if __name__ == "__main__":
 
     # Action: fetch
     parser_fetch = subparsers.add_parser("fetch", help="Fetch one or more payload entries")
-    parser_fetch.add_argument("tag", type=str, help="Tag for the payload file")
-    parser_fetch.add_argument("domain", type=str, default=None, nargs='?', help="Domain for the payload file")
-    parser_fetch.add_argument("timestamp", type=int, default=0, nargs='?', help="Timestamp of DAQ data")
+    parser_fetch.add_argument("tag", type=NonEmptyStr, help="Tag for the payload file")
+    parser_fetch.add_argument("-d", "--domain", type=NonEmptyStr, default=None, help="Domain for the payload file")
+    parser_fetch.add_argument("-s", "--start", type=NonNegativeInt, default=sys.maxsize, help="A non-negative integer representing the start of interval when the payload is applied")
 
     args = parser.parse_args()
 
