@@ -268,6 +268,25 @@ def add(domain: str, payload: pathlib.Path, start: int, end: int = None):
     pils_file.write_text(json.dumps(pils, indent=2))
 
 
+def push():
+    pils_file = pathlib.Path.cwd()/".xpload"/"pils.json"
+
+    try:
+        pils = json.load(pils_file.open())
+    except OSError as e:
+        raise RuntimeError("No stage found. Use \"add\" action to stage intervals: " + repr(e))
+    except json.JSONDecodeError as e:
+        raise RuntimeError("Invalid stage found. Fix or remove the stage and try again: " + repr(e))
+
+    prefixes = db.path if isinstance(db.path, list) else [db.path]
+    prefixes = [pathlib.Path(prefix) for prefix in prefixes]
+
+    copy_args = [(pathlib.Path(payload['path']), prefixes, pil['domain']) for pil in pils for payload in pil['payloads']]
+
+    for payload_copy_args in copy_args:
+        payload_copy(*payload_copy_args, True)
+
+
 def fetch_payloads(tag: str, domain: str, start: int):
 
     url = f"{db.url()}/payloadiovs/?gtName={tag}&majorIOV=0&minorIOV={start}"
@@ -357,6 +376,13 @@ def act_on(args):
             print("Error:", e)
             sys.exit(os.EX_OSFILE)
 
+    if args.action == 'push':
+        try:
+            push()
+        except Exception as e:
+            print("Error:", e)
+            sys.exit(os.EX_OSFILE)
+
     if args.action == 'insert':
         insert_payload(args.tag, args.domain, args.payload, args.start)
 
@@ -439,6 +465,9 @@ if __name__ == "__main__":
     parser_add.add_argument("payload", type=FilePathType, help=f"Payload file")
     parser_add.add_argument("-s", "--start", type=NonNegativeInt, default=0, help="A non-negative integer representing the start of interval when the payload is applied")
     parser_add.add_argument("-e", "--end", type=NonNegativeInt, default=None, help="A non-negative integer representing the end of interval when the payload is applied")
+
+    # Action: push
+    parser_push = subparsers.add_parser("push", help="Push staged payload interval list")
 
     # Action: insert
     parser_insert = subparsers.add_parser("insert", help="Insert an entry")
