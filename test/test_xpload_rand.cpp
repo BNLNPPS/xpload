@@ -60,7 +60,7 @@ auto random_tokens(std::pair<int, int> tag_range, std::pair<int, int> dom_range,
 
   std::ostringstream tag; tag << "Tag_" << tag_index;
   std::ostringstream dom; dom << "Domain_" << dom_index;
-  std::ostringstream pld; pld << "Payload_" << tst << "_Commit_" << tag_range.second - tag_index + 1 << "_Domain_" << dom_index;
+  std::ostringstream pld; pld << "Payload_" << tst << "_Commit_" << tag_index << "_Domain_" << dom_index;
 
   return Tokens{tst, tag.str(), dom.str(), pld.str()};
 }
@@ -98,14 +98,14 @@ int main(int argc, char *argv[])
 
   std::srand(seed);
 
-  string cfg = getenv("XPLOAD_CONFIG_NAME") ? string(getenv("XPLOAD_CONFIG_NAME")) : "dev";
+  string cfg = getenv("XPLOAD_CONFIG_NAME") ? string(getenv("XPLOAD_CONFIG_NAME")) : "test";
   xpload::Configurator config(cfg);
 
   for (int segment : segments)
   {
     this_thread::sleep_for(chrono::seconds(segment));
 
-    auto [timestamp, tag, domain, payload] = random_tokens({1, 10}, {1, 10}, {1, 10});
+    auto [timestamp, tag, domain, payload] = random_tokens({1, 100}, {1, 10}, {1, 1000});
 
     auto t1 = chrono::high_resolution_clock::now();
     xpload::Result result = xpload::fetch(tag, domain, timestamp, config);
@@ -113,9 +113,12 @@ int main(int argc, char *argv[])
 
     chrono::duration<double, std::milli> td = t2 - t1;
 
-    if (result.paths.size() != 1 || result.paths[0] != config.db.path + "/" + payload)
+    if (result.paths.size() != 1)
     {
-      cerr << "Expected " << payload << " but got something else\n";
+      cerr << "Expected single payload but got " << result.paths.size() << "\n";
+      return EXIT_FAILURE;
+    } else if ( result.paths[0] != config.db.path + "/" + payload) {
+      cerr << "Expected " << payload << " but got " << result.paths[0] << "\n";
       return EXIT_FAILURE;
     } else {
       if (config.db.verbosity > 1)
