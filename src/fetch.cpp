@@ -53,16 +53,12 @@ Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Conf
     if (res != CURLE_OK)
       std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << '\n';
 
-    double byte_count;
-    curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD, &byte_count);
-    result.byte_count = std::round(byte_count);
-
-    long http_code(0);
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+    curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD, &result.byte_count);
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &result.response_code);
 
     curl_easy_cleanup(curl);
 
-    if (http_code != CURLE_HTTP_RETURNED_ERROR)
+    if (result.response_code != CURLE_HTTP_RETURNED_ERROR)
     {
       try
       {
@@ -73,23 +69,17 @@ Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Conf
              continue;
           result.paths.push_back(cfg.db.path + '/' + obj["payloads"][0]["name"].get<std::string>());
         }
-
-        return result;
       }
       catch (nlohmann::json::exception& e)
       {
         std::cerr << "Error: " << e.what() << '\n';
-        return {};
       }
-
-    } else {
-      return {};
     }
   }
 
   curl_global_cleanup();
 
-  return {};
+  return result;
 }
 
 }

@@ -11,7 +11,8 @@ namespace xpload {
 struct Result
 {
   std::vector<std::string> paths;
-  size_t byte_count;
+  long response_code;
+  double byte_count;
 };
 
 Result fetch(std::string tag, std::string domain = "", uint64_t timestamp = UINT64_MAX, const Configurator& cfg = Configurator());
