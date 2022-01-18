@@ -107,6 +107,7 @@ int main(int argc, char *argv[])
 
     auto [timestamp, tag, domain, payload] = random_tokens({1, 100}, {1, 10}, {1, 1000});
 
+    auto t0 = chrono::system_clock::now();
     auto t1 = chrono::high_resolution_clock::now();
     xpload::Result result = xpload::fetch(tag, domain, timestamp, config);
     auto t2 = chrono::high_resolution_clock::now();
@@ -124,7 +125,10 @@ int main(int argc, char *argv[])
       if (config.db.verbosity > 1)
         cout << "OK in " << td.count() << " ms after " << segment << " s " << result.byte_count << " B \"" << result.paths[0] << "\"\n";
       else if (config.db.verbosity > 0)
-        cout << td.count() << " " << segment << " " << result.byte_count << " \"" << result.paths[0] << "\"\n";
+        cout << chrono::system_clock::to_time_t(t0) << ", " << td.count() << ", " << segment << ", "
+             << result.byte_count << ", "
+             << result.response_code << ", \""
+             << result.paths[0] << "\"\n";
     }
   }
 
