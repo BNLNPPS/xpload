@@ -103,6 +103,10 @@ int main(int argc, char *argv[])
   string cfg = getenv("XPLOAD_CONFIG_NAME") ? string(getenv("XPLOAD_CONFIG_NAME")) : "test";
   xpload::Configurator config(cfg);
 
+  // Print the header
+  if (config.db.verbosity > 0)
+    cout << "time, duration, wait, byte_count, response_code, path, error_code\n";
+
   for (int segment : segments)
   {
     this_thread::sleep_for(chrono::seconds(segment));
@@ -116,22 +120,25 @@ int main(int argc, char *argv[])
 
     chrono::duration<double, std::milli> td = t2 - t1;
 
+    int error_code = 0;
+
     if (result.paths.size() != 1)
     {
       cerr << "Expected single payload but got " << result.paths.size() << "\n";
-      return EXIT_FAILURE;
+      error_code = 1;
     } else if ( result.paths[0] != config.db.path + "/" + tk.payload) {
       cerr << "Expected " << tk.payload << " but got " << result.paths[0] << "\n";
-      return EXIT_FAILURE;
-    } else {
-      if (config.db.verbosity > 1)
-        cout << "OK in " << td.count() << " ms after " << segment << " s " << result.byte_count << " B \"" << result.paths[0] << "\"\n";
-      else if (config.db.verbosity > 0)
-        cout << chrono::system_clock::to_time_t(t0) << ", " << td.count() << ", " << segment << ", "
-             << result.byte_count << ", "
-             << result.response_code << ", \""
-             << result.paths[0] << "\"\n";
+      error_code = 2;
     }
+
+    if (config.db.verbosity > 1)
+      cout << "OK in " << td.count() << " ms after " << segment << " s " << result.byte_count << " B \"" << result.paths[0] << "\"\n";
+    else if (config.db.verbosity > 0)
+      cout << chrono::system_clock::to_time_t(t0) << ", " << td.count() << ", " << segment << ", "
+           << result.byte_count << ", "
+           << result.response_code << ", \""
+           << (!error_code ? result.paths[0] : "") << "\", "
+           << error_code << "\n";
   }
 
   return EXIT_SUCCESS;
