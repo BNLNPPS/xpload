@@ -71,11 +71,12 @@ auto random_tokens(std::pair<int, int> tag_range, std::pair<int, int> dom_range,
 /**
  * Usage:
  *
- * $ test_xpload_rand <b> <n> [rand_seed]
+ * $ test_xpload_rand <b> <n> [rand_seed] [rand_once]
  *
  * <b> is a positive integer defining a closed interval [0, b]
  * <n> is a number of calls to be made within the interval
  * [rand_seed] is a seed for the random number generator
+ * [rand_once] is a flag to generate tag/domain/timestamp tokens only once
  */
 int main(int argc, char *argv[])
 {
@@ -89,6 +90,7 @@ int main(int argc, char *argv[])
   int b = (args.size() > 0) ? stoi(args[0]) : 100;
   int n = (args.size() > 1) ? stoi(args[1]) : ceil(b/10.);
   int rand_seed = (args.size() > 2) ? stoi(args[2]) : 12345;
+  int rand_once = (args.size() > 3 && stoi(args[3]) != 0) ? true : false;
 
   vector<int> segments = split_interval(b, n);
 
@@ -107,11 +109,17 @@ int main(int argc, char *argv[])
   if (config.db.verbosity > 0)
     cout << "time, duration, wait, byte_count, response_code, path, error_code\n";
 
+  Tokens tk;
+  bool generate_tokens = true;
+
   for (int segment : segments)
   {
     this_thread::sleep_for(chrono::seconds(segment));
 
-    Tokens tk = random_tokens({1, 100}, {1, 10}, {1, 1000});
+    if (generate_tokens) {
+      tk = random_tokens({17, 19}, {5, 10}, {300, 301});
+      if (rand_once) generate_tokens = false;
+    }
 
     auto t0 = chrono::system_clock::now();
     auto t1 = chrono::high_resolution_clock::now();
