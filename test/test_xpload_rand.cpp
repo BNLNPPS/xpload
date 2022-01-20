@@ -49,31 +49,33 @@ std::vector<int> split_interval(int b, int n)
   return segments;
 }
 
+struct Tokens {
+  uint64_t timestamp;
+  std::string tag, domain, payload;
+};
 
 auto random_tokens(std::pair<int, int> tag_range, std::pair<int, int> dom_range, std::pair<int, int> tst_range)
 {
-  struct Tokens { uint64_t tst; std::string tag, dom, pld; };
-
-  uint64_t tst  = tst_range.first + std::rand() % tst_range.second;
+  uint64_t timestamp  = tst_range.first + std::rand() % tst_range.second;
   int tag_index = tag_range.first + std::rand() % tag_range.second;
   int dom_index = dom_range.first + std::rand() % dom_range.second;
 
   std::ostringstream tag; tag << "Tag_" << tag_index;
-  std::ostringstream dom; dom << "Domain_" << dom_index;
-  std::ostringstream pld; pld << "Payload_" << tst << "_Commit_" << tag_index << "_Domain_" << dom_index;
+  std::ostringstream domain; domain << "Domain_" << dom_index;
+  std::ostringstream payload; payload << "Payload_" << timestamp << "_Commit_" << tag_index << "_Domain_" << dom_index;
 
-  return Tokens{tst, tag.str(), dom.str(), pld.str()};
+  return Tokens{timestamp, tag.str(), domain.str(), payload.str()};
 }
 
 
 /**
  * Usage:
  *
- * $ test_xpload_rand <b> <n> [seed]
+ * $ test_xpload_rand <b> <n> [rand_seed]
  *
  * <b> is a positive integer defining a closed interval [0, b]
  * <n> is a number of calls to be made within the interval
- * [seed] is a seed for the random number generator
+ * [rand_seed] is a seed for the random number generator
  */
 int main(int argc, char *argv[])
 {
@@ -86,7 +88,7 @@ int main(int argc, char *argv[])
 
   int b = (args.size() > 0) ? stoi(args[0]) : 100;
   int n = (args.size() > 1) ? stoi(args[1]) : ceil(b/10.);
-  int seed = (args.size() > 2) ? stoi(args[2]) : 12345;
+  int rand_seed = (args.size() > 2) ? stoi(args[2]) : 12345;
 
   vector<int> segments = split_interval(b, n);
 
@@ -96,7 +98,7 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  std::srand(seed);
+  std::srand(rand_seed);
 
   string cfg = getenv("XPLOAD_CONFIG_NAME") ? string(getenv("XPLOAD_CONFIG_NAME")) : "test";
   xpload::Configurator config(cfg);
@@ -105,11 +107,11 @@ int main(int argc, char *argv[])
   {
     this_thread::sleep_for(chrono::seconds(segment));
 
-    auto [timestamp, tag, domain, payload] = random_tokens({1, 100}, {1, 10}, {1, 1000});
+    Tokens tk = random_tokens({1, 100}, {1, 10}, {1, 1000});
 
     auto t0 = chrono::system_clock::now();
     auto t1 = chrono::high_resolution_clock::now();
-    xpload::Result result = xpload::fetch(tag, domain, timestamp, config);
+    xpload::Result result = xpload::fetch(tk.tag, tk.domain, tk.timestamp, config);
     auto t2 = chrono::high_resolution_clock::now();
 
     chrono::duration<double, std::milli> td = t2 - t1;
@@ -118,8 +120,8 @@ int main(int argc, char *argv[])
     {
       cerr << "Expected single payload but got " << result.paths.size() << "\n";
       return EXIT_FAILURE;
-    } else if ( result.paths[0] != config.db.path + "/" + payload) {
-      cerr << "Expected " << payload << " but got " << result.paths[0] << "\n";
+    } else if ( result.paths[0] != config.db.path + "/" + tk.payload) {
+      cerr << "Expected " << tk.payload << " but got " << result.paths[0] << "\n";
       return EXIT_FAILURE;
     } else {
       if (config.db.verbosity > 1)
