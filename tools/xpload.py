@@ -279,6 +279,29 @@ def pprint_payload(respjson, dump: bool):
                 print(f"{o.domain} {o.hexhash} {p.name} {p.start}")
 
 
+def NonEmptyStr(value: str):
+    value = value.strip()
+    if not value:
+        raise argparse.ArgumentTypeError("Must provide a non-empty string")
+    return value
+
+
+def NonNegativeInt(value: str):
+    try:
+        value = int(value)
+        if value < 0: raise ValueError
+    except ValueError:
+        raise argparse.ArgumentTypeError("Must provide a non-negative integer value")
+    return value
+
+
+def FilePathType(value: str):
+    value = pathlib.Path(value)
+    if not value.exists():
+        raise argparse.ArgumentTypeError(f"File not found")
+    return value
+
+
 if __name__ == "__main__":
     """ Main entry point for xpload utility """
     import argparse
