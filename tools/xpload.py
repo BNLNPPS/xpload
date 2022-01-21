@@ -233,6 +233,41 @@ def payload_copy(payload_file: pathlib.Path, prefixes: list[pathlib.Path], domai
     return destination
 
 
+def add(domain: str, payload: pathlib.Path, start: int, end: int = None):
+    # Make assumptions about input values
+    if end:
+        assert end > start
+    # Use staged pils if exist
+    pils_file = pathlib.Path.cwd()/".xpload"/"pils.json"
+    # A list of payload intervals loaded from pils_file
+    pils = []
+
+    try:
+        pils = json.load(pils_file.open())
+    except OSError: # File not found. Create it silently
+        pils_file.parent.mkdir(exist_ok=True)
+    except json.JSONDecodeError as e: # json is not valid
+        raise RuntimeError("Found invalid stage. Fix or remove and try again: " + repr(e))
+
+    # Select a pil to update from the existing pils if any
+    existing_pils = [indx for indx, pil in enumerate(pils) if pil['domain'] == domain]
+
+    if len(existing_pils) >= 2:
+        raise RuntimeError(f"Found invalid stage. Only one payload list for \"{domain}\" can be staged")
+
+    # Get payloads from the existing pil if any and update
+    payloads = pils.pop(existing_pils[0])['payloads'] if existing_pils else []
+    # Remove all payloads with the requested start and end values
+    payloads = [pld for pld in payloads if pld['start'] != start or pld['end'] != end]
+    # Finally, insert new payload with the requested parameters
+    payloads.append(dict(path=str(payload), start=start, end=end))
+    # Insert updated pil
+    domain_entry = dict(domain=domain, payloads=payloads)
+    pils.append(domain_entry)
+
+    pils_file.write_text(json.dumps(pils, indent=2))
+
+
 def fetch_payloads(tag: str, domain: str, start: int):
 
     url = f"{db.url()}/payloadiovs/?gtName={tag}&majorIOV=0&minorIOV={start}"
@@ -315,6 +350,13 @@ def act_on(args):
         respjson = fetch_entries(args.component, args.id)
         pprint_tags(respjson, args.dump)
 
+    if args.action == 'add':
+        try:
+            add(args.domain, args.payload, args.start, args.end)
+        except Exception as e:
+            print("Error:", e)
+            sys.exit(os.EX_OSFILE)
+
     if args.action == 'insert':
         insert_payload(args.tag, args.domain, args.payload, args.start)
 
@@ -390,6 +432,13 @@ if __name__ == "__main__":
     parser_show = subparsers.add_parser("show", help="Show entries")
     parser_show.add_argument("component", type=str, choices=['tags', 'domains'], help="Pick a list to show available entries")
     parser_show.add_argument("--id", type=int, default=None, help="Unique id")
+
+    # Action: add
+    parser_add = subparsers.add_parser("add", help="Stage payload intervals")
+    parser_add.add_argument("domain", type=NonEmptyStr, help="Domain of the payload file")
+    parser_add.add_argument("payload", type=FilePathType, help=f"Payload file")
+    parser_add.add_argument("-s", "--start", type=NonNegativeInt, default=0, help="A non-negative integer representing the start of interval when the payload is applied")
+    parser_add.add_argument("-e", "--end", type=NonNegativeInt, default=None, help="A non-negative integer representing the end of interval when the payload is applied")
 
     # Action: insert
     parser_insert = subparsers.add_parser("insert", help="Insert an entry")
