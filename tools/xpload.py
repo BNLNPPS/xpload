@@ -65,7 +65,7 @@ def config_db(config_name):
             return json.load(cfgf, object_hook=lambda d: DbConfig(**d))
 
     XPLOAD_DIR = os.getenv('XPLOAD_DIR', "")
-    XPLOAD_CONFIG_NAME = os.getenv('XPLOAD_CONFIG_NAME', "test")
+    XPLOAD_CONFIG = os.getenv('XPLOAD_CONFIG', "test")
     XPLOAD_CONFIG_SEARCH_PATHS = [".", "config"]
 
     try:
@@ -81,7 +81,7 @@ def config_db(config_name):
     if config_name:
         config_file = f"{config_name}.json"
     else:
-        config_file = f"{XPLOAD_CONFIG_NAME}.json"
+        config_file = f"{XPLOAD_CONFIG}.json"
 
     for config_path in search_paths:
         try:

@@ -14,7 +14,7 @@ namespace xpload {
 
 
 Configurator::Configurator(std::string config_name) :
-  name{std::getenv("XPLOAD_CONFIG_NAME") ? std::getenv("XPLOAD_CONFIG_NAME") : config_name}
+  name{std::getenv("XPLOAD_CONFIG") ? std::getenv("XPLOAD_CONFIG") : config_name}
 {
   std::string filepath = Locate(name + ".json");
 

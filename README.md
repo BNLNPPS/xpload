@@ -103,5 +103,5 @@ xclient
 Configuration files with database connection parameters can be found in
 `config/` under the source tree or `<prefix>/share` when installed. To pick
 other than default `test.json` configuration file from these locations one can
-set the `XPLOAD_CONFIG_NAME` environment variable, e.g.
-`XPLOAD_CONFIG_NAME=dev`
+set the `XPLOAD_CONFIG` environment variable, e.g.
+`XPLOAD_CONFIG=dev`

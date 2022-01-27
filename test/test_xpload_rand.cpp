@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  string cfg = getenv("XPLOAD_CONFIG_NAME") ? string(getenv("XPLOAD_CONFIG_NAME")) : "test";
+  string cfg = getenv("XPLOAD_CONFIG") ? string(getenv("XPLOAD_CONFIG")) : "test";
   xpload::Configurator config(cfg);
 
   // Print the header
