@@ -23,6 +23,25 @@ std::size_t save_data(const char* input, std::size_t chunk_size, std::size_t n_c
 }
 
 
+void parse_response(std::string http_data, Result &result, std::string domain, const Configurator& cfg)
+{
+  try
+  {
+    nlohmann::json json = nlohmann::json::parse(http_data);
+
+    for (const auto& obj : json) {
+      if (!domain.empty() && obj["domain"] != domain)
+         continue;
+      result.paths.push_back(cfg.db.path + '/' + obj["payloads"][0]["name"].get<std::string>());
+    }
+  }
+  catch (nlohmann::json::exception& e)
+  {
+    std::cerr << "Error: " << e.what() << '\n';
+  }
+}
+
+
 Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Configurator& cfg)
 {
   Result result;
@@ -60,20 +79,7 @@ Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Conf
 
     if (result.response_code != CURLE_HTTP_RETURNED_ERROR)
     {
-      try
-      {
-        nlohmann::json json = nlohmann::json::parse(http_data);
-
-        for (const auto& obj : json) {
-          if (!domain.empty() && obj["domain"] != domain)
-             continue;
-          result.paths.push_back(cfg.db.path + '/' + obj["payloads"][0]["name"].get<std::string>());
-        }
-      }
-      catch (nlohmann::json::exception& e)
-      {
-        std::cerr << "Error: " << e.what() << '\n';
-      }
+      parse_response(http_data, result, domain, cfg);
     }
   }
 
