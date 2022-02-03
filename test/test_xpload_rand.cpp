@@ -44,7 +44,11 @@ std::vector<int> split_interval(int b, int n)
 
   std::vector<int> segments;
   std::adjacent_difference(isegments.begin(), isegments.end(), std::back_inserter(segments));
-  segments.push_back(b - isegments.back());
+
+  // Ensure that the entire [0, b] interval is covered by segments by adding
+  // the last point b unless it is already selected
+  if (b != isegments.back())
+    segments.push_back(b - isegments.back());
 
   return segments;
 }
