@@ -60,9 +60,17 @@ struct Tokens {
 
 auto random_tokens(std::pair<int, int> tag_range, std::pair<int, int> dom_range, std::pair<int, int> tst_range)
 {
-  uint64_t timestamp  = tst_range.first + std::rand() % tst_range.second;
-  int tag_index = tag_range.first + std::rand() % tag_range.second;
-  int dom_index = dom_range.first + std::rand() % dom_range.second;
+  if (tag_range.first > tag_range.second ||
+      dom_range.first > dom_range.second ||
+      tst_range.first > tst_range.second)
+  {
+    std::cerr << "Assertion failed: a <= b in [a, b]\n";
+    return Tokens{};
+  }
+
+  uint64_t timestamp  = tst_range.first + std::rand() % (tst_range.second - tst_range.first + 1);
+  int tag_index       = tag_range.first + std::rand() % (tag_range.second - tag_range.first + 1);
+  int dom_index       = dom_range.first + std::rand() % (dom_range.second - dom_range.first + 1);
 
   std::ostringstream tag; tag << "Tag_" << tag_index;
   std::ostringstream domain; domain << "Domain_" << dom_index;
