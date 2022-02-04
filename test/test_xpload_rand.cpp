@@ -104,6 +104,8 @@ int main(int argc, char *argv[])
   int rand_seed = (args.size() > 2) ? stoi(args[2]) : 12345;
   int rand_once = (args.size() > 3 && stoi(args[3]) != 0) ? true : false;
 
+  std::srand(rand_seed);
+
   vector<int> segments = split_interval(b, n);
 
   int sum = accumulate(segments.begin(), segments.end(), 0);
@@ -111,8 +113,6 @@ int main(int argc, char *argv[])
     cerr << "Assertion failed: (sum == b)\n";
     return EXIT_FAILURE;
   }
-
-  std::srand(rand_seed);
 
   string cfg = getenv("XPLOAD_CONFIG_NAME") ? string(getenv("XPLOAD_CONFIG_NAME")) : "test";
   xpload::Configurator config(cfg);
