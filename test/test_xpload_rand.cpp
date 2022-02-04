@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 
   // Print the header
   if (config.db.verbosity > 0)
-    cout << "time, duration, wait, tag, domain, timestamp, byte_count, response_code, path, error_code\n";
+    cout << "time, duration, wait, tag, domain, timestamp, byte_count, response_code, cache_size, path, error_code\n";
 
   Tokens tk;
   bool generate_tokens = true;
@@ -157,7 +157,8 @@ int main(int argc, char *argv[])
            << result.reqpars.domain << ", "
            << result.reqpars.timestamp << ", "
            << result.byte_count << ", "
-           << result.response_code << ", \""
+           << result.response_code << ", "
+           << result.cache_size << ", \""
            << (!error_code ? result.paths[0] : "") << "\", "
            << error_code << "\n";
     }
