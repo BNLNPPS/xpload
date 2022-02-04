@@ -1,4 +1,4 @@
-FROM centos:8 AS build-stage
+FROM rockylinux:8.5 AS build-stage
 
 SHELL ["/bin/bash", "--login", "-c"]
 
