@@ -23,16 +23,17 @@ std::size_t save_data(const char* input, std::size_t chunk_size, std::size_t n_c
 }
 
 
-void parse_response(std::string http_data, Result &result, std::string domain, const Configurator& cfg)
+void parse_response(const std::string& http_data, Result& result)
 {
+  const RequestParams &reqpars = result.reqpars;
   try
   {
     nlohmann::json json = nlohmann::json::parse(http_data);
 
     for (const auto& obj : json) {
-      if (!domain.empty() && obj["domain"] != domain)
+      if (!reqpars.domain.empty() && obj["domain"] != reqpars.domain)
          continue;
-      result.paths.push_back(cfg.db.path + '/' + obj["payloads"][0]["name"].get<std::string>());
+      result.paths.push_back(reqpars.cfg.db.path + '/' + obj["payloads"][0]["name"].get<std::string>());
     }
   }
   catch (nlohmann::json::exception& e)
@@ -44,7 +45,7 @@ void parse_response(std::string http_data, Result &result, std::string domain, c
 
 Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Configurator& cfg)
 {
-  Result result;
+  Result result{tag, domain, timestamp, cfg};
 
   curl_version_info_data *curlver_data = curl_version_info(CURLVERSION_NOW);
   std::string useragent{"curl/" + std::string(curlver_data->version)};
@@ -79,7 +80,7 @@ Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Conf
 
     if (result.response_code != CURLE_HTTP_RETURNED_ERROR)
     {
-      parse_response(http_data, result, domain, cfg);
+      parse_response(http_data, result);
     }
   }
 

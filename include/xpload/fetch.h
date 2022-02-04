@@ -8,8 +8,17 @@
 
 namespace xpload {
 
+struct RequestParams
+{
+  std::string tag;
+  std::string domain;
+  uint64_t timestamp;
+  const Configurator& cfg;
+};
+
 struct Result
 {
+  const RequestParams reqpars;
   std::vector<std::string> paths;
   long response_code;
   double byte_count;
