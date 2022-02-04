@@ -71,6 +71,9 @@ void to_cache(const std::string& http_data, Result& result, CachedResponses& cac
   std::string key{result.reqpars.tag + std::to_string(result.reqpars.timestamp)};
 
   cache[key] = http_data;
+
+  auto calc_total = [](size_t total, const CachedResponses::value_type& entry) { return total + entry.second.size(); };
+  result.cache_size = std::accumulate(cache.begin(), cache.end(), 0, calc_total);
 }
 
 
