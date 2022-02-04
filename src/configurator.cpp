@@ -75,8 +75,7 @@ std::string Configurator::ReadConfig(std::string filepath)
 {
   nlohmann::json json;
 
-  try
-  {
+  try {
     std::ifstream ifs(filepath);
     ifs >> json;
 
@@ -89,8 +88,7 @@ std::string Configurator::ReadConfig(std::string filepath)
       json["retry_max_delay"]
     };
   }
-  catch (nlohmann::json::exception& e)
-  {
+  catch (nlohmann::json::exception& e) {
     std::cerr << "Error: Failed reading config parameters from " << filepath << " " << e.what() << " [" << __PRETTY_FUNCTION__ << "]\n";
   }
 

@@ -159,8 +159,7 @@ int main(int argc, char *argv[])
 
     int error_code = 0;
 
-    if (result.paths.size() != 1)
-    {
+    if (result.paths.size() != 1) {
       cerr << "Expected single payload but got " << result.paths.size() << "\n";
       error_code = 1;
     } else if ( result.paths[0] != config.db.path + "/" + tk.payload) {

@@ -36,6 +36,7 @@ void parse_response(const std::string& http_data, Result& result)
     for (const auto& obj : json) {
       if (!reqpars.domain.empty() && obj["domain"] != reqpars.domain)
          continue;
+
       result.paths.push_back(reqpars.cfg.db.path + '/' + obj["payloads"][0]["name"].get<std::string>());
     }
   }
@@ -97,8 +98,7 @@ Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Conf
   curl_global_init(CURL_GLOBAL_ALL);
   CURL *curl = curl_easy_init();
 
-  if (curl)
-  {
+  if (curl) {
     std::ostringstream url;
     url << cfg.db.url() << "/payloadiovs/?gtName=" << tag << "&majorIOV=0&minorIOV=" << timestamp;
 
@@ -141,8 +141,7 @@ Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Conf
     curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD, &result.byte_count);
     curl_easy_cleanup(curl);
 
-    if (result.response_code == 200)
-    {
+    if (result.response_code == 200) {
       parse_response(http_data, result);
 
       if (cfg.db.use_cache) {
