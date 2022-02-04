@@ -3,6 +3,6 @@
   "port":    "8080",
   "apiroot": "/api/cdb_rest",
   "path":    "/path/to/payload/data",
-  "use_cache": false,
+  "use_cache": true,
   "verbosity": 2
 }
