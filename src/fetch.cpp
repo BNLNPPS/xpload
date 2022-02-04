@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include <curl/curl.h>
@@ -43,9 +44,46 @@ void parse_response(const std::string& http_data, Result& result)
 }
 
 
+// Maps key(tag, timestamp as string) : http_data
+using CachedResponses = std::unordered_map<std::string, std::string>;
+
+
+bool from_cache(Result& result, const CachedResponses& cache)
+{
+  const RequestParams &reqpars = result.reqpars;
+  std::string key{reqpars.tag + std::to_string(reqpars.timestamp)};
+
+  auto cached_response = cache.find(key);
+
+  if (cached_response == cache.end()) {
+    return false;
+  } else {
+    const std::string &http_data = cached_response->second;
+    parse_response(http_data, result);
+    result.response_code = 0xC; // = 12 status code for results from cache
+    return true;
+  }
+}
+
+
+void to_cache(const std::string& http_data, Result& result, CachedResponses& cache)
+{
+  std::string key{result.reqpars.tag + std::to_string(result.reqpars.timestamp)};
+
+  cache[key] = http_data;
+}
+
+
 Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Configurator& cfg)
 {
   Result result{tag, domain, timestamp, cfg};
+
+  static CachedResponses cached_responses;
+
+  // Use cached server response for same parameters when requested
+  if (cfg.db.use_cache && from_cache(result, cached_responses)) {
+    return result;
+  }
 
   curl_version_info_data *curlver_data = curl_version_info(CURLVERSION_NOW);
   std::string useragent{"curl/" + std::string(curlver_data->version)};
@@ -81,6 +119,10 @@ Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Conf
     if (result.response_code != CURLE_HTTP_RETURNED_ERROR)
     {
       parse_response(http_data, result);
+
+      if (cfg.db.use_cache) {
+        to_cache(http_data, result, cached_responses);
+      }
     }
   }
 
