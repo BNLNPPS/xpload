@@ -1,8 +1,8 @@
 {
   "host":    "localhost",
-  "port":    "8000",
+  "port":    "8080",
   "apiroot": "/api/cdb_rest",
   "path":    "/path/to/payload/data",
   "use_cache": false,
-  "verbosity": 1
+  "verbosity": 2
 }
