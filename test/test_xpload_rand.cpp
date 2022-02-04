@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 
   // Print the header
   if (config.db.verbosity > 0)
-    cout << "time, duration, wait, byte_count, response_code, path, error_code\n";
+    cout << "time, duration, wait, tag, domain, timestamp, byte_count, response_code, path, error_code\n";
 
   Tokens tk;
   bool generate_tokens = true;
@@ -151,14 +151,16 @@ int main(int argc, char *argv[])
       error_code = 2;
     }
 
-    if (config.db.verbosity > 1)
-      cout << "OK in " << td.count() << " ms after " << segment << " s " << result.byte_count << " B \"" << result.paths[0] << "\"\n";
-    else if (config.db.verbosity > 0)
+    if (config.db.verbosity > 0) {
       cout << chrono::system_clock::to_time_t(t0) << ", " << td.count() << ", " << segment << ", "
+           << result.reqpars.tag << ", "
+           << result.reqpars.domain << ", "
+           << result.reqpars.timestamp << ", "
            << result.byte_count << ", "
            << result.response_code << ", \""
            << (!error_code ? result.paths[0] : "") << "\", "
            << error_code << "\n";
+    }
   }
 
   return EXIT_SUCCESS;
