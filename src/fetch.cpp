@@ -103,7 +103,7 @@ Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Conf
     url << cfg.db.url() << "/payloadiovs/?gtName=" << tag << "&majorIOV=0&minorIOV=" << timestamp;
 
     if (cfg.db.verbosity >= 2)
-      std::cout << "url: " << url.str() << '\n';
+      std::cerr << "Info: " << url.str() << '\n';
 
     std::string http_data;
 

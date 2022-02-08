@@ -24,7 +24,7 @@ std::vector<int> split_interval(int b, int n)
   bool prereq = (b > 0 && n > 0 && n <= b + 1);
   if (!prereq)
   {
-    std::cerr << "Assertion failed: (b > 0 && n > 0 && n <= b + 1)\n";
+    std::cerr << "Error: Assertion failed: (b > 0 && n > 0 && n <= b + 1) [" << __PRETTY_FUNCTION__ << "]\n";
     return {};
   }
 
@@ -84,7 +84,7 @@ auto random_tokens(std::pair<int, int> tag_limits, std::pair<int, int> dom_limit
       dom_limits.first > dom_limits.second ||
       tst_limits.first > tst_limits.second)
   {
-    std::cerr << "Assertion failed: a <= b in [a, b]\n";
+    std::cerr << "Error: Assertion failed: a <= b in [a, b] [" << __PRETTY_FUNCTION__ << "]\n";
     return Tokens{};
   }
 
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
 
   int sum = accumulate(segments.begin(), segments.end(), 0);
   if (sum != b) {
-    cerr << "Assertion failed: (sum == b)\n";
+    cerr << "Error: Assertion failed: (sum == b) [" << __PRETTY_FUNCTION__ << "]\n";
     return EXIT_FAILURE;
   }
 
@@ -160,10 +160,10 @@ int main(int argc, char *argv[])
     int error_code = 0;
 
     if (result.paths.size() != 1) {
-      cerr << "Expected single payload but got " << result.paths.size() << "\n";
+      cerr << "Error: Expected single payload but got " << result.paths.size() << " [" << __PRETTY_FUNCTION__ << "]\n";
       error_code = 1;
     } else if ( result.paths[0] != config.db.path + "/" + tk.payload) {
-      cerr << "Expected " << tk.payload << " but got " << result.paths[0] << "\n";
+      cerr << "Error: Expected " << tk.payload << " but got " << result.paths[0] << " [" << __PRETTY_FUNCTION__ << "]\n";
       error_code = 2;
     }
 
