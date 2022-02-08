@@ -4,5 +4,7 @@
   "apiroot": "/api/cdb_rest",
   "path":    "/cvmfs/sphenix.sdcc.bnl.gov/gcc-8.3/opt/sphenix/core/calibrations/DBTest/",
   "use_cache": true,
-  "verbosity": 1
+  "verbosity": 1,
+  "retry_times": 5,
+  "retry_max_delay": 60
 }

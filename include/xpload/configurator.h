@@ -12,6 +12,8 @@ struct DbConfig
   std::string path{"/path/to/payload/data"};
   bool use_cache{false};
   int verbosity{0};
+  int retry_times{5};
+  int retry_max_delay{60};
 
   std::string url() const { return "http://" + host + ':' + port + apiroot; }
 };
