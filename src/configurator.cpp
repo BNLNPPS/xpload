@@ -85,7 +85,16 @@ std::string Configurator::ReadConfig(std::string filepath)
     std::cerr << "Error: " << e.what() << '\n';
   }
 
-  db = { json["host"], json["apiroot"], json["port"], json["path"], json["use_cache"], json["verbosity"] };
+  db = { json["host"], json["apiroot"], json["port"], json["path"], json["use_cache"], json["verbosity"],
+    json["retry_times"],
+    json["retry_max_delay"]
+  };
+
+  if (db.retry_times < 0)   db.retry_times = 0;
+  if (db.retry_times > 100) db.retry_times = 100;
+
+  if (db.retry_max_delay < 1)   db.retry_max_delay = 1;
+  if (db.retry_max_delay > 100) db.retry_max_delay = 100;
 
   return {};
 }
