@@ -1,8 +1,10 @@
+#include <chrono>
 #include <cstdint>
 #include <optional>
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -79,7 +81,8 @@ void to_cache(const std::string& http_data, Result& result, CachedResponses& cac
 
 Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Configurator& cfg)
 {
-  Result result{tag, domain, timestamp, cfg};
+  // Initialize response_code with 0
+  Result result{ {tag, domain, timestamp, cfg}, {}, 0};
 
   static CachedResponses cached_responses;
 
@@ -109,17 +112,35 @@ Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Conf
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, save_data);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &http_data);
 
-    CURLcode res = curl_easy_perform(curl);
+    int retries = cfg.db.retry_times + 1; // retry_times can be 0, so run it at least once
+    int delay = 0;
 
-    if (res != CURLE_OK)
-      std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << '\n';
+    while (result.response_code != 200 && retries > 0)
+    {
+      std::this_thread::sleep_for(std::chrono::seconds(delay));
+
+      CURLcode res = curl_easy_perform(curl);
+      if (res != CURLE_OK) {
+        std::cerr << "Error: curl_easy_perform() failed: " << curl_easy_strerror(res) << '\n';
+        break;
+      }
+
+      curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &result.response_code);
+
+      delay *= 2;
+      retries--;
+
+      if (delay < 1) delay = 1;
+      if (delay > cfg.db.retry_max_delay) delay = cfg.db.retry_max_delay;
+
+      if (cfg.db.verbosity >= 1 && result.response_code != 200 && retries > 0)
+        std::cerr << "Warning: HTTP response code " << result.response_code << ", retry in " << delay << " seconds, " << retries << " more attempts" << '\n';
+    }
 
     curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD, &result.byte_count);
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &result.response_code);
-
     curl_easy_cleanup(curl);
 
-    if (result.response_code != CURLE_HTTP_RETURNED_ERROR)
+    if (result.response_code == 200)
     {
       parse_response(http_data, result);
 
