@@ -117,6 +117,7 @@ Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Conf
 
     while (result.response_code != 200 && retries > 0)
     {
+      http_data.clear();
       std::this_thread::sleep_for(std::chrono::seconds(delay));
 
       CURLcode res = curl_easy_perform(curl);
