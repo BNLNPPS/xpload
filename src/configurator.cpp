@@ -79,16 +79,20 @@ std::string Configurator::ReadConfig(std::string filepath)
   {
     std::ifstream ifs(filepath);
     ifs >> json;
+
+    db = {
+      json["host"], json["apiroot"], json["port"],
+      json["path"],
+      json["use_cache"],
+      json["verbosity"],
+      json["retry_times"],
+      json["retry_max_delay"]
+    };
   }
   catch (nlohmann::json::exception& e)
   {
-    std::cerr << "Error: " << e.what() << '\n';
+    std::cerr << "Error: Failed reading config parameters from " << filepath << " " << e.what() << " [" << __PRETTY_FUNCTION__ << "]\n";
   }
-
-  db = { json["host"], json["apiroot"], json["port"], json["path"], json["use_cache"], json["verbosity"],
-    json["retry_times"],
-    json["retry_max_delay"]
-  };
 
   if (db.retry_times < 0)   db.retry_times = 0;
   if (db.retry_times > 100) db.retry_times = 100;
