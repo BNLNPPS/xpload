@@ -26,7 +26,7 @@ class Configurator
 {
  public:
 
-  Configurator(std::string config_name = "test");
+  Configurator(std::string config_name = "prod");
 
   /// A unique name associated with this Configurator
   std::string name;
