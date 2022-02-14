@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.7.0] - 2022-02-14
+
+* docker: Switch from CentOS 8 to RockyLinux 8.5 by @plexoos in https://github.com/BNLNPPS/xpload/pull/8
+* Introduce caching capabilities when fetching results by @plexoos in https://github.com/BNLNPPS/xpload/pull/6
+* Implement retries for unsuccessful fetching attempts by @plexoos in https://github.com/BNLNPPS/xpload/pull/10
+
+- config: Rename environment variable `s/XPLOAD_CONFIG_NAME/XPLOAD_CONFIG/`
+- config: Improve error handling while parsing json file
+- Various improvements and enhancements of the tests
+
+
 ## [0.6.0] - 2022-01-12
 
 - Added a test to simulate real jobs with multiple calls fetching payload
