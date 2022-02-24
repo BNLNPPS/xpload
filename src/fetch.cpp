@@ -113,6 +113,7 @@ Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Conf
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &http_data);
 
     int retries = cfg.db.retry_times + 1; // retry_times can be 0, so run it at least once
+    result.total_retries = -1;
     int delay = 0;
 
     while (result.response_code != 200 && retries > 0)
@@ -121,9 +122,10 @@ Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Conf
       std::this_thread::sleep_for(std::chrono::seconds(delay));
 
       CURLcode res = curl_easy_perform(curl);
+      result.total_retries++;
+
       if (res != CURLE_OK) {
         std::cerr << "Error: curl_easy_perform() failed: " << curl_easy_strerror(res) << '\n';
-        break;
       }
 
       curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &result.response_code);

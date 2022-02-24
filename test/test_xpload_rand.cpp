@@ -174,7 +174,8 @@ int main(int argc, char *argv[])
            << result.reqpars.timestamp << ", "
            << result.byte_count << ", "
            << result.response_code << ", "
-           << result.cache_size << ", \""
+           << result.cache_size << ", "
+           << result.total_retries << ", \""
            << (!error_code ? result.paths[0] : "") << "\", "
            << error_code << "\n";
     }
