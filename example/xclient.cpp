@@ -22,14 +22,12 @@ int main(int argc, char **argv)
 {
   ArgParser arg_parser(argc, argv);
 
-  string cfg = arg_parser.get_value("-c");
   string tag = arg_parser.get_value("-t");
   string domain = arg_parser.get_value("-d");
   uint64_t timestamp = std::stoul(arg_parser.get_value("-s"));
 
-  xpload::Configurator config(cfg);
 
-  xpload::Result result = xpload::fetch(tag, domain, timestamp, config);
+  xpload::Result result = xpload::fetch(tag, domain, timestamp);
 
   if (result.paths.empty())
   {
@@ -64,7 +62,6 @@ string ArgParser::get_value(const string &option) const
   }
 
   // Default values
-  if (value.empty() && option == "-c") return "test";
   if (value.empty() && option == "-t") return "example_tag_1";
   if (value.empty() && option == "-d") return "CEMC";
   if (value.empty() && option == "-s") return std::to_string(UINT64_MAX);
