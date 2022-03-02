@@ -34,10 +34,10 @@ void parse_response(const std::string& http_data, Result& result)
     nlohmann::json json = nlohmann::json::parse(http_data);
 
     for (const auto& obj : json) {
-      if (!reqpars.domain.empty() && obj["domain"] != reqpars.domain)
+      if (!reqpars.domain.empty() && obj["payload_type"] != reqpars.domain)
          continue;
 
-      result.paths.push_back(reqpars.cfg.db.path + '/' + obj["payloads"][0]["name"].get<std::string>());
+      result.paths.push_back(reqpars.cfg.db.path + '/' + obj["payload_iov"][0]["payload_url"].get<std::string>());
     }
   }
   catch (nlohmann::json::exception& e)
