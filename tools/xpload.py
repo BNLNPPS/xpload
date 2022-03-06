@@ -245,10 +245,8 @@ def push_payload(tag: str, domain: str, payload: str, start: int = 0):
 
 def act_on(args):
     if args.action == 'show':
-        result = fetch_entries(args.component, args.id)
-        if result:
-            print(f"Found {len(result)} entries")
-            print(json.dumps(result, indent=4))
+        respjson = fetch_entries(args.component, args.id)
+        pprint_tags(respjson, args.dump)
 
     if args.action == 'push':
         push_payload(args.tag, args.domain, args.payload, args.start)
@@ -256,6 +254,17 @@ def act_on(args):
     if args.action == 'fetch':
         respjson = fetch_payloads(args.tag, args.timestamp)
         pprint_payload(respjson, args.dump)
+
+
+def pprint_tags(respjson, dump: bool):
+    """ Pretty print tag entries """
+
+    if dump:
+        print(json.dumps(respjson, indent=4))
+    else:
+        objs = nestednamedtuple(respjson)
+        for o in objs:
+            print(f"{o.name}")
 
 
 def pprint_payload(respjson, dump: bool):
