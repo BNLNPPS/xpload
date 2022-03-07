@@ -9,6 +9,7 @@ struct DbConfig
   std::string host{"localhost"};
   std::string port{"8080"};
   std::string apiroot{"/api/cdb_rest"};
+  std::string apiver{""};
   std::string path{"/path/to/payload/data"};
   bool use_cache{false};
   int verbosity{0};

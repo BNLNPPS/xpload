@@ -81,7 +81,7 @@ std::string Configurator::ReadConfig(std::string filepath)
 
     db = {
       json["host"], json["port"],
-      json["apiroot"],
+      json["apiroot"], json["apiver"],
       json["path"],
       json["use_cache"],
       json["verbosity"],

@@ -2,6 +2,7 @@
   "host":    "localhost",
   "port":    "8080",
   "apiroot": "/api/cdb_rest",
+  "apiver":  "",
   "path":    "/path/to/payload/data",
   "use_cache": true,
   "verbosity": 2,

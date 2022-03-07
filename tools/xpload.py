@@ -45,7 +45,7 @@ def nestednamedtuple(obj):
         return obj
 
 
-class DbConfig(namedtuple('DbConfig', ['host', 'port', 'apiroot', 'path'])):
+class DbConfig(namedtuple('DbConfig', ['host', 'port', 'apiroot', 'apiver', 'path'])):
     __slots__ = ()
 
     def __new__(cls, *args, **kwargs):
