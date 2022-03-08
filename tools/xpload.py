@@ -6,6 +6,14 @@ import os
 import requests
 import sys
 
+try:
+    from xpload_config import *
+except ImportError:
+    __version__ = "0.0.0-notinstalled"
+    XPLOAD_CONFIG_SEARCH_PATHS = [".", "config"]
+    pass
+
+
 general_schema = {
     "definitions" : {
         "entry": {
@@ -66,12 +74,6 @@ def config_db(config_name):
 
     XPLOAD_DIR = os.getenv('XPLOAD_DIR', "")
     XPLOAD_CONFIG = os.getenv('XPLOAD_CONFIG', "prod")
-    XPLOAD_CONFIG_SEARCH_PATHS = [".", "config"]
-
-    try:
-        from xpload_config import XPLOAD_CONFIG_SEARCH_PATHS
-    except ImportError:
-        pass
 
     if XPLOAD_DIR:
         search_paths = [f"{XPLOAD_DIR.rstrip('/')}/{cfgpath}" for cfgpath in XPLOAD_CONFIG_SEARCH_PATHS] + XPLOAD_CONFIG_SEARCH_PATHS
@@ -311,6 +313,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Manipulate payload entries")
     parser.add_argument("-c", "--config", type=str, default="", help="Config file with database connection parameters")
     parser.add_argument("-d", "--dump", action='store_true', default=False, help="Dump response as json instead of pretty printing it")
+    parser.add_argument("-v", "--version", action='version', version=__version__)
 
     # Parse various actions
     subparsers = parser.add_subparsers(dest="action", required=True, help="Choose one of the actions")

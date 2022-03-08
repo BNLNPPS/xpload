@@ -1,1 +1,8 @@
+__all__ = [
+    '__version__',
+    'XPLOAD_CONFIG_SEARCH_PATHS'
+]
+
+__version__ = "@PROJECT_VERSION@"
+
 XPLOAD_CONFIG_SEARCH_PATHS = ["./", "@XPLOAD_DATA_INSTALL_DIR@/config", "@XPLOAD_DATA_INSTALL_DIR_FULL@/config", "@xpload_SOURCE_DIR@/config"]
