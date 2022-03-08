@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 
   string cfg(arg_parser.get_value("-c"));
   string tag(arg_parser.get_value("-t"));
-  string domain("");
+  string domain(arg_parser.get_value("-d"));
   uint64_t timestamp = stoul(arg_parser.get_value("-s"));
 
   xpload::Configurator config(cfg);
