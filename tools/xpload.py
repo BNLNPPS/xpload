@@ -320,7 +320,7 @@ if __name__ == "__main__":
 
     # Action: show
     parser_show = subparsers.add_parser("show", help="Show entries")
-    parser_show.add_argument("component", type=str, choices=['tags', 'domains', 'payloads'], help="Pick a list to show available entries")
+    parser_show.add_argument("component", type=str, choices=['tags', 'domains'], help="Pick a list to show available entries")
     parser_show.add_argument("--id", type=int, default=None, help="Unique id")
 
     # Action: push
