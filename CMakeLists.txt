@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(xpload VERSION 0.7.4 LANGUAGES CXX)
+project(xpload VERSION 0.8.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

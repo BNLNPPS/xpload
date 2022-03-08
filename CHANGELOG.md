@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.8.0] - 2022-04-20
+
+- Introduced add and push actions into xpl CLI tool
+  - Removed deprecated insert action
+- Improved existing and added new tests for CLI and the library
+- Cleaned and restructured available configurations
+  - More strict search rules for configuration files
+  - Switched to production settings by default
+- Registered project with zenodo https://zenodo.org/badge/latestdoi/419745626
+
+* config: Update domain to reflect the change introduced by openshift admins by @plexoos in https://github.com/BNLNPPS/xpload/pull/17
+* fetch: Add the first payload path to returned results by @plexoos in https://github.com/BNLNPPS/xpload/pull/18
+* Constrain search for configuration file by environment variable by @plexoos in https://github.com/BNLNPPS/xpload/pull/19
+* config: Throw runtime exceptions in Configurator constructor by @plexoos in https://github.com/BNLNPPS/xpload/pull/21
+* Support search for payload files in multiple prefixes by @plexoos in https://github.com/BNLNPPS/xpload/pull/23
+
+
 ## [0.7.0] - 2022-02-14
 
 * docker: Switch from CentOS 8 to RockyLinux 8.5 by @plexoos in https://github.com/BNLNPPS/xpload/pull/8

@@ -1,6 +1,9 @@
 **xpload** is a C++ library to communicate with a calibration database via
 `libcurl`
 
+[![DOI](https://zenodo.org/badge/419745626.svg)](https://zenodo.org/badge/latestdoi/419745626)
+
+
 ## Prerequisites
 
 - C++17 (gcc 10.2.1)
