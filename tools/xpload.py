@@ -139,22 +139,29 @@ def create_payload(name, domain_list_id, start):
     return _post_data('piov', {"payload_url": name, "payload_list": domain_list_id, "major_iov": 0, "minor_iov": start})
 
 
-def fetch_entries(component: str, tag_id: int = None):
-    """ Fetch and print entries from respective table """
+def form_api_url(component: str, tag_id: int = None):
+    url = db.url()
+
     if component == 'tags':
-        url = db.url() + "/gt"
+        url += "/gt"
     elif component == 'domains':
-        url = db.url() + "/pt"
+        url += "/pt"
     elif component == 'domain_lists':
-        url = db.url() + "/pl"
+        url += "/pl"
     elif component == 'payloads':
-        url = db.url() + "/piov"
+        url += "/piov"
     else:
         print(f"Error: Wrong component {component}")
-        return []
 
     if tag_id is not None:
         url += f"/{tag_id}"
+
+    return url
+
+
+def fetch_entries(component: str, tag_id: int = None):
+    """ Fetch entries using respective endpoints """
+    url = form_api_url(component, tag_id)
 
     try:
         response = requests.get(url)
