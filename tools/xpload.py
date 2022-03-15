@@ -115,7 +115,7 @@ def _post_data(endpoint: str, params: dict):
         print(f"Error: Encountered invalid response while posting {json.dumps(params)} to {url}")
         return None
 
-    return respjson['id']
+    return respjson['name']
 
 
 def create_tag_type(name="test"):
@@ -124,17 +124,17 @@ def create_tag_type(name="test"):
 def create_tag_status(name="test"):
     return _post_data('gtstatus', {"name": name})
 
-def create_tag(name, type_id: int, status_id: int):
-    return _post_data('gt', {"name": name, "status": status_id, "type": type_id})
+def create_tag(name, type_name: str, status_name: str):
+    return _post_data('gt', {"name": name, "status": status_name, "type": type_name})
 
 def create_domain(name):
     return _post_data('pt', {"name": name})
 
-def create_domain_list(tag_id, domain_id):
-    return _post_data('pl', {"global_tag": tag_id, "payload_type": domain_id})
+def create_domain_list(tag_name, domain_name):
+    return _post_data('pl', {"name": f"{tag_name}_{domain_name}", "global_tag": tag_name, "payload_type": domain_name})
 
-def create_payload(name, domain_list_id, start):
-    return _post_data('piov', {"payload_url": name, "payload_list": domain_list_id, "major_iov": 0, "minor_iov": start})
+def create_payload(name, domain_list_name, start):
+    return _post_data('piov', {"payload_url": name, "payload_list": domain_list_name, "major_iov": 0, "minor_iov": start})
 
 
 def form_api_url(component: str, uid: int = None):
@@ -210,10 +210,10 @@ def push_payload(tag: str, domain: str, payload: str, start: int = 0):
 
     # Select the last entry if exists or create a new default one
     tag_types = fetch_entries("tag_types")
-    tag_type_id = create_tag_type() if not tag_types else tag_types[-1]['id']
+    tag_type_name = create_tag_type() if not tag_types else tag_types[-1]['name']
 
     tag_statuses = fetch_entries("tag_statuses")
-    tag_status_id = create_tag_status() if not tag_statuses else tag_statuses[-1]['id']
+    tag_status_name = create_tag_status() if not tag_statuses else tag_statuses[-1]['name']
 
     # Get all tags
     tags = fetch_entries("tags")
@@ -222,44 +222,42 @@ def push_payload(tag: str, domain: str, payload: str, start: int = 0):
 
     # If the tag does not exist create one
     if existing_tag is None:
-        tag_id = create_tag(tag, tag_type_id, tag_status_id)
-        print(f"Tag {tag} does not exist. Created {tag_id}")
+        tag_name = create_tag(tag, tag_type_name, tag_status_name)
+        print(f"Tag {tag} does not exist. Created {tag_name}")
     else:
-        tag_id = existing_tag['id']
+        tag_name = existing_tag['name']
 
     # Get all domains
     domains = fetch_entries("domains")
-    last_domain_id = int(domains[-1]['id']) if domains else 0
     # Select the last matching entry
     existing_domain = next((e for e in reversed(domains) if e['name'] == domain), None)
 
     # If the domain does not exist create one
     if existing_domain is None:
-        domain_id = create_domain(domain)
-        print(f"Domain {domain} does not exist. Created {domain_id}")
+        domain_name = create_domain(domain)
+        print(f"Domain {domain} does not exist. Created {domain_name}")
     else:
-        domain_id = existing_domain['id']
+        domain_name = existing_domain['name']
 
-    # Check if domain_list with tag_id and domain_id exists
+    # Check if domain_list with tag_name and domain_name exists
     domain_lists = fetch_entries("domain_lists")
     # Select the last matching entry
-    existing_domain_list = next((e for e in reversed(domain_lists) if e['global_tag'] == tag_id and e['payload_type'] == domain_id), None)
+    existing_domain_list = next((e for e in reversed(domain_lists) if e['global_tag'] == tag_name and e['payload_type'] == domain_name), None)
 
     # If either tag or domain did not exist, create a new domain_list
     if existing_tag is None or existing_domain is None or existing_domain_list is None:
-        name = f"{tag}_{domain}"
-        domain_list_id = create_domain_list(tag_id, domain_id)
+        domain_list_name = create_domain_list(tag_name, domain_name)
     else:
-        domain_list_id = existing_domain_list['id']
+        domain_list_name = existing_domain_list['name']
 
     # Get all payloads
     payloads = fetch_entries("payloads")
     # Select the last matching entry
-    existing_payload = next((e for e in reversed(payloads) if e['payload_url'] == payload and e['payload_list'] == domain_list_id), None)
+    existing_payload = next((e for e in reversed(payloads) if e['payload_url'] == payload and e['payload_list'] == domain_list_name), None)
 
     if existing_payload is None:
-        payload_id = create_payload(payload, domain_list_id, start)
-        print(f"Payload {payload} does not exist. Created {payload_id}")
+        payload_name = create_payload(payload, domain_list_name, start)
+        print(f"Payload {payload} does not exist. Created {payload_name}")
 
 
 def act_on(args):
