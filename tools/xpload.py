@@ -137,7 +137,7 @@ def create_payload(name, domain_list_id, start):
     return _post_data('piov', {"payload_url": name, "payload_list": domain_list_id, "major_iov": 0, "minor_iov": start})
 
 
-def form_api_url(component: str, tag_id: int = None):
+def form_api_url(component: str, uid: int = None):
     url = db.url()
 
     if component == 'tags':
@@ -155,15 +155,15 @@ def form_api_url(component: str, tag_id: int = None):
     else:
         print(f"Error: Wrong component {component}. Cannot form valid URL")
 
-    if tag_id is not None:
-        url += f"/{tag_id}"
+    if uid is not None:
+        url += f"/{uid}"
 
     return url
 
 
-def fetch_entries(component: str, tag_id: int = None):
+def fetch_entries(component: str, uid: int = None):
     """ Fetch entries using respective endpoints """
-    url = form_api_url(component, tag_id)
+    url = form_api_url(component, uid)
 
     try:
         response = requests.get(url)
@@ -178,7 +178,7 @@ def fetch_entries(component: str, tag_id: int = None):
     try:
         jsonschema.validate(entries, general_schema)
     except:
-        error_details = f": {component} may not contain entry with id={tag_id}" if tag_id else ""
+        error_details = f": {component} may not contain entry with id={uid}" if uid else ""
         print(f"Error: Encountered invalid response from {url}", error_details)
         return []
 
