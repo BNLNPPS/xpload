@@ -106,13 +106,13 @@ def _post_data(endpoint: str, params: dict):
         response = requests.post(url=url, json=params)
         respjson = response.json()
     except:
-        print(f"Error: Something went wrong while posting data to {url}")
+        print(f"Error: Something went wrong while posting {json.dumps(params)} to {url}")
         return None
 
     try:
         jsonschema.validate(respjson, general_schema['definitions']['entry'])
     except:
-        print(f"Error: Encountered invalid response")
+        print(f"Error: Encountered invalid response while posting {json.dumps(params)} to {url}")
         return None
 
     return respjson['id']
@@ -151,7 +151,7 @@ def form_api_url(component: str, tag_id: int = None):
     elif component == 'payloads':
         url += "/piov"
     else:
-        print(f"Error: Wrong component {component}")
+        print(f"Error: Wrong component {component}. Cannot form valid URL")
 
     if tag_id is not None:
         url += f"/{tag_id}"
@@ -167,7 +167,7 @@ def fetch_entries(component: str, tag_id: int = None):
         response = requests.get(url)
         respjson = response.json()
     except:
-        print(f"Error: Something went wrong while looking for tag id {tag_id} in {component}. Check", url)
+        print(f"Error: Something went wrong while looking for {component} at {url}")
         return []
 
     # Always return a list
@@ -176,7 +176,8 @@ def fetch_entries(component: str, tag_id: int = None):
     try:
         jsonschema.validate(entries, general_schema)
     except:
-        print(f"Error: Encountered invalid response. Tag id {tag_id} may not exist")
+        error_details = f": {component} may not contain entry with id={tag_id}" if tag_id else ""
+        print(f"Error: Encountered invalid response from {url}", error_details)
         return []
 
     return entries
