@@ -124,9 +124,7 @@ def create_tag_type(name="test"):
 def create_tag_status(name="test"):
     return _post_data('gtstatus', {"name": name})
 
-def create_tag(name):
-    type_id = create_tag_type()
-    status_id = create_tag_status()
+def create_tag(name, type_id: int, status_id: int):
     return _post_data('gt', {"name": name, "status": status_id, "type": type_id})
 
 def create_domain(name):
@@ -144,6 +142,10 @@ def form_api_url(component: str, tag_id: int = None):
 
     if component == 'tags':
         url += "/gt"
+    elif component == 'tag_types':
+        url += "/gttype"
+    elif component == 'tag_statuses':
+        url += "/gtstatus"
     elif component == 'domains':
         url += "/pt"
     elif component == 'domain_lists':
@@ -206,6 +208,13 @@ def fetch_payloads(tag: str, domain: str, start: int):
 def push_payload(tag: str, domain: str, payload: str, start: int = 0):
     """ Inserts an entry into corresponding tables """
 
+    # Select the last entry if exists or create a new default one
+    tag_types = fetch_entries("tag_types")
+    tag_type_id = create_tag_type() if not tag_types else tag_types[-1]['id']
+
+    tag_statuses = fetch_entries("tag_statuses")
+    tag_status_id = create_tag_status() if not tag_statuses else tag_statuses[-1]['id']
+
     # Get all tags
     tags = fetch_entries("tags")
     # Select the last matching entry
@@ -213,7 +222,7 @@ def push_payload(tag: str, domain: str, payload: str, start: int = 0):
 
     # If the tag does not exist create one
     if existing_tag is None:
-        tag_id = create_tag(tag)
+        tag_id = create_tag(tag, tag_type_id, tag_status_id)
         print(f"Tag {tag} does not exist. Created {tag_id}")
     else:
         tag_id = existing_tag['id']
