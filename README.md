@@ -58,7 +58,6 @@ Instead it may be more convenient to set the `XPLOAD_DIR` environment variable
 to where the configuration files reside.
 
 ```shell
-export XPLOAD_DIR=<xpload_source>
 export XPLOAD_DIR=<prefix>/share/xpload
 ```
 
