@@ -15,7 +15,7 @@ Get the code
 
 Configure and build the package
 
-    cmake -S xpload -B build -DCMAKE_INSTALL_PREFIX=path/to/where/install
+    cmake -S xpload -B build -DCMAKE_INSTALL_PREFIX=<install_prefix>
     cmake --build build
 
 Install the package
@@ -27,80 +27,59 @@ Install the package
 
 ### CLI tool
 
-The entries in the database can be managed with a command line utility
-`tools/xpload.py`. Let's say you would like to add a payload file `payload1`
-that belongs to a group of payloads associated with a particular subsystem or
-running conditions that we will refer to as `domain1`. In case we will need to
-fetch multiple payloads for various subsystems, we will also associated this
-payload with a global label called `tag1`.
+The entries in the database can be managed with a command line utility `xpl`.
+Let's say you would like to add a payload file `payload1` that belongs to a
+group of payloads associated with a particular subsystem or running conditions
+that we will refer to as `domain1`. In case we will need to fetch multiple
+payloads for various subsystems, we will also associated this payload with a
+global label called `tag1`.
 
 ```shell
-xpload push tag1 domain1 payload1
+xpl push tag1 domain1 payload1
 ```
 
-Existing entries can be viewed with the following command:
+Existing entries can be viewed with the following commands:
 
 ```shell
-xpload show payloads
-xpload show domains
-xpload show tags
+xpl show tags
+xpl show domains
 ```
-
-The CLI tool needs to know where to find a configuration file containing the
-database connection details. This will be made more transparent in the future
-releases but for now you may help the program by using the `-c` option.
-
-```shell
-xpload -c path/to/config.json push tag1 domain1 payload1
-```
-
-Instead it may be more convenient to set the `XPLOAD_DIR` environment variable
-to where the configuration files reside.
-
-```shell
-export XPLOAD_DIR=<prefix>/share/xpload
-```
-
-With the environment variable set it is easy to switch between different
-configuration files using the same `-c` option
-
-```shell
-xpload -c prod push tag1 domain1 payload1
-```
-
 
 ### In a C++ client
 
-Here is a code snippet to give a general idea of how the library can be used on
-the client side:
-
-```c++
-#include <xpload/xpload.h>
-
-...
-
-string tag = "example_tag_1";
-uint64_t timestamp = 9999999999;
-
-vector<string> paths = xpload::fetch(tag, timestamp);
-
-for (const string& path : paths)
-  cout << path << '\n';
-```
-
-We also provide a fully functional example that can be built and executed for
-testing purposes. Assuming the steps of installing the xpload package were
-followed in the `Quick start` section one can simply do from the same location:
+We provide a basic example implementing a C++ client that can be found in
+`example/xclient.cpp`. Assuming the installation steps for the xpload package
+were followed in the `Quick start` section one can simply compile the example
+from the source directory:
 
 ```shell
-cmake -S xpload/example -B build-example -DCMAKE_INSTALL_PREFIX=path/to/where/install
-cmake --build build-example
-cmake --install build-example
-xclient
+cd example
+cmake -S . -B build
+cmake --build build
+./build/xclient
 ```
 
-Configuration files with database connection parameters can be found in
-`config/` under the source tree or `<prefix>/share` when installed. To pick
-other than default `test.json` configuration file from these locations one can
-set the `XPLOAD_CONFIG` environment variable, e.g.
-`XPLOAD_CONFIG=dev`
+### Configuration
+
+A number of configuration files with database connection details can be found in
+the `config/` subdirectory. The users can modify the existing ones or provide
+their own. It is easy to switch between different configuration files using
+their base name and the `-c` option. For example, to use `dev.json` or
+`test.json` one can respectively specify the command line arguments as:
+
+```shell
+xpl -c dev show tags
+xpl -c test fetch sometag
+```
+
+Similarly, with the C++ interface one pass a name to the `Configurator` class as:
+
+```c++
+xpload::Configurator config("test");
+```
+
+When the xpload package is installed it looks for a configuration file in
+`<install_prefix>` which is the preferred behavior in production environment.
+For testing and debugging purposes this can be overridden by placing a
+configuration file in the current directory or by setting the `XPLOAD_DIR`
+environment variable to where your configuration files reside.
