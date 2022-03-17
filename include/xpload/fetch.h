@@ -19,6 +19,7 @@ struct RequestParams
 struct Result
 {
   const RequestParams reqpars;
+  std::string payload;
   std::vector<std::string> paths;
   long response_code;
   double byte_count;

@@ -39,6 +39,8 @@ void parse_response(const std::string& http_data, Result& result)
 
       result.paths.push_back(reqpars.cfg.db.path + '/' + obj["payload_iov"][0]["payload_url"].get<std::string>());
     }
+    // Save a copy of the first path if found
+    result.payload = result.paths.size() > 0 ? result.paths[0] : "";
   }
   catch (nlohmann::json::exception& e)
   {
@@ -83,7 +85,7 @@ void to_cache(const std::string& http_data, Result& result, CachedResponses& cac
 Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Configurator& cfg)
 {
   // Initialize response_code with 0
-  Result result{ {tag, domain, timestamp, cfg}, {}, 0};
+  Result result{ {tag, domain, timestamp, cfg}, "", {}, 0};
 
   static CachedResponses cached_responses;
 
