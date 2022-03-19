@@ -19,7 +19,7 @@ Configurator::Configurator(std::string config_name) :
   std::string filepath = Locate(name + ".json");
 
   if (filepath.empty()) {
-    std::string paths{std::getenv("XPLOAD_DIR") ? std::getenv("XPLOAD_DIR") : XPLOAD_CONFIG_SEARCH_PATHS};
+    std::string paths{std::getenv("XPLOAD_CONFIG_DIR") ? std::getenv("XPLOAD_CONFIG_DIR") : XPLOAD_CONFIG_SEARCH_PATHS};
     std::cerr << "Warning: Could not find config file \"" << name << ".json\" in " << paths << "\n";
   }
 
@@ -34,7 +34,7 @@ std::string Configurator::Locate(std::string filename) const
 {
   std::vector<std::string> search_paths;
 
-  const std::string user_dir{std::getenv("XPLOAD_DIR") ? std::getenv("XPLOAD_DIR") : ""};
+  const std::string user_dir{std::getenv("XPLOAD_CONFIG_DIR") ? std::getenv("XPLOAD_CONFIG_DIR") : ""};
 
   if (user_dir.empty())
   {

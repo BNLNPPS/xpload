@@ -81,5 +81,5 @@ xpload::Configurator config("test");
 When the xpload package is installed it looks for a configuration file in
 `<install_prefix>` which is the preferred behavior in production environment.
 For testing and debugging purposes this can be overridden by placing a
-configuration file in the current directory or by setting the `XPLOAD_DIR`
+configuration file in the current directory or by setting the `XPLOAD_CONFIG_DIR`
 environment variable to where your configuration files reside.
