@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
+#include <stdexcept>
 #include <string>
 #include <sys/stat.h>
 #include <vector>
@@ -16,17 +17,7 @@ namespace xpload {
 Configurator::Configurator(std::string config_name) :
   name{std::getenv("XPLOAD_CONFIG") ? std::getenv("XPLOAD_CONFIG") : config_name}
 {
-  std::string filepath = Locate(name + ".json");
-
-  if (filepath.empty()) {
-    std::string paths{std::getenv("XPLOAD_CONFIG_DIR") ? std::getenv("XPLOAD_CONFIG_DIR") : XPLOAD_CONFIG_SEARCH_PATHS};
-    std::cerr << "Warning: Could not find config file \"" << name << ".json\" in " << paths << "\n";
-  }
-
-  std::string error = ReadConfig(filepath);
-
-  if (!error.empty())
-    std::cerr << "Warning: Could not read config file \"" << name << ".json\". Using default\n";
+  ReadConfig(Locate(name + ".json"));
 }
 
 
@@ -56,21 +47,32 @@ std::string Configurator::Locate(std::string filename) const
   }
 
   struct stat buffer;
+  std::string filepath{""};
   for (std::string path : search_paths)
   {
-    std::string fullname(path + "/" + filename);
-    if (stat(fullname.c_str(), &buffer) == 0)
-      return fullname;
+    std::string fpath{path + "/" + filename};
+    if (stat(fpath.c_str(), &buffer) == 0)
+    {
+      filepath = fpath;
+      break;
+    }
   }
 
-  return "";
+  if (filepath.empty())
+  {
+    std::string errmsg{"Could not find config file \"" + filename + "\" in "};
+    for (std::string path : search_paths) errmsg += (path + ":");
+    throw std::runtime_error(errmsg);
+  }
+
+  return filepath;
 }
 
 
 /**
  * Expects a valid filepath.
  */
-std::string Configurator::ReadConfig(std::string filepath)
+void Configurator::ReadConfig(std::string filepath)
 {
   nlohmann::json json;
 
@@ -89,7 +91,8 @@ std::string Configurator::ReadConfig(std::string filepath)
     };
   }
   catch (nlohmann::json::exception& e) {
-    std::cerr << "Error: Failed reading config parameters from " << filepath << " " << e.what() << " [" << __PRETTY_FUNCTION__ << "]\n";
+    std::string errmsg{"Failed reading config parameters from " + filepath + "\n" + e.what()};
+    throw std::runtime_error{errmsg};
   }
 
   if (db.retry_times < 0)   db.retry_times = 0;
@@ -97,8 +100,6 @@ std::string Configurator::ReadConfig(std::string filepath)
 
   if (db.retry_max_delay < 1)   db.retry_max_delay = 1;
   if (db.retry_max_delay > 100) db.retry_max_delay = 100;
-
-  return {};
 }
 
 }
