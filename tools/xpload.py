@@ -250,14 +250,8 @@ def push_payload(tag: str, domain: str, payload: str, start: int = 0):
     else:
         domain_list_name = existing_domain_list['name']
 
-    # Get all payloads
-    payloads = fetch_entries("payloads")
-    # Select the last matching entry
-    existing_payload = next((e for e in reversed(payloads) if e['payload_url'] == payload and e['payload_list'] == domain_list_name), None)
-
-    if existing_payload is None:
-        payload_name = create_payload(payload, domain_list_name, start)
-        print(f"Payload {payload} does not exist. Created {payload_name}")
+    payload_name = create_payload(payload, domain_list_name, start)
+    print(f"Payload {payload} does not exist. Created {payload_name}")
 
 
 def act_on(args):
