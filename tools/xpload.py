@@ -131,7 +131,7 @@ def create_domain(name):
     return _post_data('pt', {"name": name})
 
 def create_domain_list(tag_name, domain_name):
-    return _post_data('pl', {"name": f"{tag_name}_{domain_name}", "global_tag": tag_name, "payload_type": domain_name})
+    return _post_data('pl', {"global_tag": tag_name, "payload_type": domain_name})
 
 def create_payload(name, domain_list_name, start):
     return _post_data('piov', {"payload_url": name, "payload_list": domain_list_name, "major_iov": 0, "minor_iov": start})
