@@ -312,7 +312,9 @@ def payload_copy(payload_file: pathlib.Path, prefixes: list[pathlib.Path], domai
         return destination
 
     destination.parent.mkdir(parents=True, exist_ok=True)
+    # XXX Check destination file already exists?
     shutil.copyfile(payload_file, destination)
+    # Verify the copy
     md5sum_dst = hashlib.md5(destination.open('rb').read()).hexdigest()
     if md5sum != md5sum_dst:
         raise RuntimeError("Failed to copy payload file to ", destination)
@@ -484,7 +486,7 @@ def act_on(args):
 
     if args.action == 'show':
         respjson = fetch_entries(args.component, args.id)
-        pprint_tags(respjson, args.dump)
+        pprint_named_entries(respjson, args.dump)
 
     if args.action == 'add':
         try:
@@ -493,14 +495,14 @@ def act_on(args):
             if args.subaction == 'pil':
                 add_pil(args.tag, args.domain, args.payload, args.start, args.end)
         except Exception as e:
-            print("Error:", e)
+            print("Error:", type(e).__name__, e)
             sys.exit(os.EX_OSFILE)
 
     if args.action == 'push':
         try:
             push()
         except Exception as e:
-            print("Error:", e)
+            print("Error:", type(e).__name__, e)
             sys.exit(os.EX_OSFILE)
 
     if args.action == 'fetch':
@@ -508,12 +510,12 @@ def act_on(args):
         try:
             pprint_payload(respjson, args.dump)
         except FileExistsError as e:
-            print(e)
+            print("Error:", type(e).__name__, e)
             sys.exit(os.EX_OSFILE)
 
 
-def pprint_tags(respjson, dump: bool):
-    """ Pretty print tag entries """
+def pprint_named_entries(respjson, dump: bool):
+    """ Pretty print named entries """
 
     if dump:
         print(json.dumps(respjson, indent=4))
@@ -607,7 +609,7 @@ if __name__ == "__main__":
     parser_fetch.add_argument("-s", "--start", type=NonNegativeInt, default=sys.maxsize, help="A non-negative integer representing the start of interval when the payload is applied")
 
     # Action: config
-    parser_config = subparsers.add_parser("config", help="Config")
+    parser_config = subparsers.add_parser("config", help="Print configuration values")
     parser_config.add_argument("field", type=NonEmptyStr, nargs='*', help="Print configuration field value")
 
     args = parser.parse_args()

@@ -1,6 +1,5 @@
 #include <chrono>
 #include <cstdint>
-#include <optional>
 #include <filesystem>
 #include <iostream>
 #include <sstream>
@@ -34,7 +33,8 @@ void parse_response(const std::string& http_data, Result& result)
   {
     nlohmann::json json = nlohmann::json::parse(http_data);
 
-    for (const auto& obj : json) {
+    for (const auto& obj : json)
+    {
       if (!reqpars.domain.empty() && obj["payload_type"] != reqpars.domain)
          continue;
 
@@ -53,6 +53,7 @@ void parse_response(const std::string& http_data, Result& result)
         }
       }
     }
+
     // Save a copy of the first path if found
     result.payload = result.paths.size() > 0 ? result.paths[0] : "";
   }
