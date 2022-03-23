@@ -3,6 +3,7 @@
 import json
 import jsonschema
 import os
+import pathlib
 import requests
 import sys
 
@@ -186,6 +187,17 @@ def fetch_entries(component: str, uid: int = None):
     return entries
 
 
+def payload_exists(payload_name: str) -> pathlib.Path:
+    prefixes = db.path if isinstance(db.path, list) else [db.path]
+
+    for prefix in prefixes:
+        payload_file = pathlib.Path(prefix)/payload_name
+        if payload_file.exists():
+            return payload_file
+
+    return None
+
+
 def fetch_payloads(tag: str, domain: str, start: int):
 
     url = f"{db.url()}/payloadiovs/?gtName={tag}&majorIOV=0&minorIOV={start}"
@@ -273,7 +285,11 @@ def act_on(args):
 
     if args.action == 'fetch':
         respjson = fetch_payloads(args.tag, args.domain, args.start)
-        pprint_payload(respjson, args.dump)
+        try:
+            pprint_payload(respjson, args.dump)
+        except FileExistsError as e:
+            print(e)
+            sys.exit(os.EX_OSFILE)
 
 
 def pprint_tags(respjson, dump: bool):
@@ -294,9 +310,11 @@ def pprint_payload(respjson, dump: bool):
         print(json.dumps(respjson, indent=4))
     else:
         objs = nestednamedtuple(respjson)
-        for o in objs:
-            for p in o.payload_iov:
-                print(f"{db.path.rstrip('/')}/{p.payload_url}")
+        paths = [str(payload_exists(p.payload_url)) for o in objs for p in o.payload_iov if payload_exists(p.payload_url)]
+        if paths:
+            print("\n".join(paths))
+        else:
+            raise FileExistsError("No payload file was found in any prefix")
 
 
 def NonEmptyStr(value: str):
