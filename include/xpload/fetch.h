@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,7 @@ struct Result
 {
   const RequestParams reqpars;
   std::string payload;
-  std::vector<std::string> paths;
+  std::vector<std::filesystem::path> paths;
   long response_code;
   double byte_count;
   size_t cache_size;

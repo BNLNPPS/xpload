@@ -162,7 +162,7 @@ int main(int argc, char *argv[])
     if (result.paths.size() != 1) {
       cerr << "Error: Expected single payload but got " << result.paths.size() << " [" << __PRETTY_FUNCTION__ << "]\n";
       error_code = 1;
-    } else if ( result.paths[0] != config.db.path + "/" + tk.payload) {
+    } else if ( result.paths[0].filename() != tk.payload) {
       cerr << "Error: Expected " << tk.payload << " but got " << result.paths[0] << " [" << __PRETTY_FUNCTION__ << "]\n";
       error_code = 2;
     }
