@@ -1,6 +1,7 @@
 #include <chrono>
 #include <cstdint>
 #include <optional>
+#include <filesystem>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -37,7 +38,20 @@ void parse_response(const std::string& http_data, Result& result)
       if (!reqpars.domain.empty() && obj["payload_type"] != reqpars.domain)
          continue;
 
-      result.paths.push_back(reqpars.cfg.db.path + '/' + obj["payload_iov"][0]["payload_url"].get<std::string>());
+      for (const auto& prefix : reqpars.cfg.db.path)
+      {
+        std::filesystem::path fullpath = prefix/obj["payload_iov"][0]["payload_url"].get<std::string>();
+        if (std::filesystem::exists(fullpath))
+        {
+          result.paths.push_back(fullpath);
+          break;
+        }
+        else
+        {
+          if (reqpars.cfg.db.verbosity >= 1)
+            std::cerr << "Warning: File " << fullpath << " does not exist\n";
+        }
+      }
     }
     // Save a copy of the first path if found
     result.payload = result.paths.size() > 0 ? result.paths[0] : "";
