@@ -3,7 +3,10 @@
   "port":    "8080",
   "apiroot": "/api/cdb_rest",
   "apiver":  "",
-  "path":    "/path/to/payload/data",
+  "path": [
+    "/path/to/payload/data0",
+    "/path/to/payload/data1"
+  ],
   "use_cache": true,
   "verbosity": 2,
   "retry_times": 5,
