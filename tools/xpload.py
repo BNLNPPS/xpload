@@ -256,6 +256,14 @@ def insert_payload(tag: str, domain: str, payload: str, start: int = 0):
 
 
 def act_on(args):
+    if args.action == 'config':
+        config_dict = db._asdict()
+        try:
+            for ix in args.field:
+                config_dict = config_dict[int(ix) if ix.isnumeric() else ix]
+        except: pass
+        print(config_dict)
+
     if args.action == 'show':
         respjson = fetch_entries(args.component, args.id)
         pprint_tags(respjson, args.dump)
@@ -342,6 +350,10 @@ if __name__ == "__main__":
     parser_fetch.add_argument("tag", type=NonEmptyStr, help="Tag for the payload file")
     parser_fetch.add_argument("-d", "--domain", type=NonEmptyStr, default=None, help="Domain for the payload file")
     parser_fetch.add_argument("-s", "--start", type=NonNegativeInt, default=sys.maxsize, help="A non-negative integer representing the start of interval when the payload is applied")
+
+    # Action: config
+    parser_config = subparsers.add_parser("config", help="Config")
+    parser_config.add_argument("field", type=NonEmptyStr, nargs='*', help="Print configuration field value")
 
     args = parser.parse_args()
 
