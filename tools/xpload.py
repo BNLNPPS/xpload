@@ -53,12 +53,13 @@ def nestednamedtuple(obj):
         return obj
 
 
-class DbConfig(namedtuple('DbConfig', ['host', 'port', 'apiroot', 'apiver', 'path'])):
+class DbConfig(namedtuple('DbConfig', ['cfgf', 'host', 'port', 'apiroot', 'apiver', 'path'])):
     __slots__ = ()
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, cfgf, **kwargs):
         kwargs = {k: v for k, v in kwargs.items() if k in cls._fields}
-        return super().__new__(cls, *args, **kwargs)
+        kwargs['cfgf'] = cfgf
+        return super().__new__(cls, **kwargs)
 
     def url(self):
         return "http://" + self.host + ':' + self.port + self.apiroot
@@ -70,7 +71,7 @@ def config_db(config_name):
     # Use user supplied config as is if it looks like a "path"
     if "." in config_name or "/" in config_name:
         with open(f"{config_name}") as cfgf:
-            return json.load(cfgf, object_hook=lambda d: DbConfig(**d))
+            return json.load(cfgf, object_hook=lambda d: DbConfig(os.path.realpath(cfgf.name), **d))
 
     XPLOAD_CONFIG_DIR = os.getenv('XPLOAD_CONFIG_DIR', "").rstrip("/")
     XPLOAD_CONFIG = os.getenv('XPLOAD_CONFIG', "prod")
@@ -85,7 +86,7 @@ def config_db(config_name):
     for config_path in search_paths:
         try:
             with open(f"{config_path}/{config_file}") as cfgf:
-                return json.load(cfgf, object_hook=lambda d: DbConfig(**d))
+                return json.load(cfgf, object_hook=lambda d: DbConfig(os.path.realpath(cfgf.name), **d))
         except:
             pass
 
