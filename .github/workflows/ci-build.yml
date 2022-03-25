@@ -38,7 +38,9 @@ jobs:
           target: build-stage
           push: true
 
+      - name: Run CLI Tests
+        run: docker run --rm --network=host -e XPLOAD_CONFIG=dev ghcr.io/bnlnpps/xpload-build xpload/test/test_cli.sh
+
       - name: Run Tests
         run: |
-             docker run --rm --network=host -e XPLOAD_CONFIG=dev ghcr.io/bnlnpps/xpload-build xpload/example/db_init_sphenix.sh
              docker run --network=host ghcr.io/bnlnpps/xpload-build ctest --test-dir build -V
