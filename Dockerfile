@@ -20,7 +20,7 @@ RUN cmake -S xpload -B build \
  && cmake --install build
 
 
-FROM centos:8 AS run-stage
+FROM rockylinux:8.5 AS run-stage
 
 SHELL ["/bin/bash", "-c"]
 
