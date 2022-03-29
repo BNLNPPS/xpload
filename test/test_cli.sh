@@ -4,7 +4,7 @@ SCRIPT_DIR=`dirname "$0"`
 
 DATA_DIR_0=`xpl config path 0`
 DATA_DIR_1=`xpl config path 1`
-DATA_DIR_N=/path/not/from/config
+DATA_DIR_N=/tmp/path/not/from/config
 
 rm -fr   $DATA_DIR_0 $DATA_DIR_1 $DATA_DIR_N
 mkdir -p $DATA_DIR_0 $DATA_DIR_1 $DATA_DIR_N

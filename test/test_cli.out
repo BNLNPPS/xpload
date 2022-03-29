@@ -3,13 +3,13 @@ tag_2
 tag_3
 domain_1
 domain_2
-/path/to/payload/data0/payload_00.data
-/path/to/payload/data0/payload_01.data
-/path/to/payload/data0/payload_00.data
-/path/to/payload/data0/payload_00.data
-/path/to/payload/data0/payload_01.data
-/path/to/payload/data0/payload_00.data
+/tmp/path/to/payload/data0/payload_00.data
+/tmp/path/to/payload/data0/payload_01.data
+/tmp/path/to/payload/data0/payload_00.data
+/tmp/path/to/payload/data0/payload_00.data
+/tmp/path/to/payload/data0/payload_01.data
+/tmp/path/to/payload/data0/payload_00.data
 No payload file was found in any prefix
-/path/to/payload/data1/payload_10.data
-/path/to/payload/data1/payload_11.data
+/tmp/path/to/payload/data1/payload_10.data
+/tmp/path/to/payload/data1/payload_11.data
 No payload file was found in any prefix

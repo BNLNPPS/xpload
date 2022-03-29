@@ -39,7 +39,7 @@ jobs:
           push: true
 
       - name: Run CLI Tests
-        run: docker run --rm --network=host -e XPLOAD_CONFIG=dev ghcr.io/bnlnpps/xpload-build xpload/test/test_cli.sh
+        run: docker run --rm --network=host -e XPLOAD_CONFIG=dev -v /tmp:/tmp ghcr.io/bnlnpps/xpload-build xpload/test/test_cli.sh
 
       - name: Run Library Tests
-        run: docker run --rm --network=host -e XPLOAD_CONFIG=dev ghcr.io/bnlnpps/xpload-build ctest --test-dir build -V
+        run: docker run --rm --network=host -e XPLOAD_CONFIG=dev -v /tmp:/tmp ghcr.io/bnlnpps/xpload-build ctest --test-dir build -V
