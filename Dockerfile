@@ -19,6 +19,12 @@ RUN cmake -S xpload -B build \
  && cmake --build build \
  && cmake --install build
 
+ENV VIRTUAL_ENV=/opt/venv
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+RUN python3 -m venv $VIRTUAL_ENV \
+ && . $VIRTUAL_ENV/bin/activate \
+ && pip install -r xpload/tools/requirements.txt
+
 
 FROM rockylinux:8.5 AS run-stage
 
