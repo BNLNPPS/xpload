@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
+import hashlib
 import json
 import jsonschema
 import os
 import pathlib
 import requests
+import shutil
+import stat
 import sys
 
 try:
@@ -196,6 +199,38 @@ def payload_exists(payload_name: str) -> pathlib.Path:
             return payload_file
 
     return None
+
+
+def payload_copy(payload_file: pathlib.Path, prefixes: list[pathlib.Path], domain: str, dry_run=False) -> pathlib.Path:
+    """ Copies `payload_file` to the first valid `prefix` from the `prefixes` list """
+
+    # Check if file exists
+    if not payload_file.exists():
+        raise FileExistsError("File not found: " + str(payload_file))
+
+    # Check if at least one prefix exists and is writeable
+    good_prefixes = [prefix for prefix in prefixes if prefix.exists() and os.stat(prefix).st_mode & (stat.S_IXUSR | stat.S_IWUSR) ]
+    if not good_prefixes:
+        raise RuntimeError("No writable prefix provided: " + ":".join(map(str, prefixes)))
+
+    # The first good prefix is the prefix
+    prefix = good_prefixes[0]
+
+    # Extract basename, create payload name
+    md5sum = hashlib.md5(payload_file.open('rb').read()).hexdigest()
+    payload_name = f"{md5sum}_{payload_file.name}"
+    destination = prefix/domain/payload_name
+
+    if dry_run:
+        return destination
+
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(payload_file, destination)
+    md5sum_dst = hashlib.md5(destination.open('rb').read()).hexdigest()
+    if md5sum != md5sum_dst:
+        raise RuntimeError("Failed to copy payload file to ", destination)
+
+    return destination
 
 
 def fetch_payloads(tag: str, domain: str, start: int):
