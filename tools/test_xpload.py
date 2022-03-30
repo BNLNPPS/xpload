@@ -8,12 +8,13 @@ import xpload
 @pytest.fixture
 def payload_copy_params(request):
     payload_file = pathlib.Path('/tmp/file.data')
-    prefixes = [pathlib.Path('/tmp/data0'), pathlib.Path('/tmp/data1')]
-    modes = request.param[:2]
+    prefixes = [pathlib.Path('/tmp/data0'), pathlib.Path('/tmp/nonexisting_dir'), pathlib.Path('/tmp/data1')]
+    modes = request.param[:3]
     domain = 'some_domain'
 
     payload_file.write_bytes(b'012345')
     for prefix, mode in zip(prefixes, modes):
+        if mode < 0: continue
         prefix.mkdir()
         prefix.chmod(mode) # Set access bits, e.g. rwxrwxrwx = 0o777
 
@@ -25,7 +26,7 @@ def payload_copy_params(request):
         shutil.rmtree(prefix, ignore_errors=True)
 
 
-@pytest.mark.parametrize('payload_copy_params', [[0o700, 0o700], [0o400, 0o700], [0o700, 0o400]], indirect=True)
+@pytest.mark.parametrize('payload_copy_params', [[0o700, -1, 0o700], [0o400, -1, 0o700], [0o700, -1, 0o400]], indirect=True)
 def test_payload_copy(payload_copy_params):
     (src, prefixes, domain) = payload_copy_params
 
@@ -33,10 +34,10 @@ def test_payload_copy(payload_copy_params):
     md5sum = hashlib.md5(dst.open('rb').read()).hexdigest()
 
     assert dst.exists() and \
-           (dst == prefixes[0]/domain/f'{md5sum}_{src.name}' or dst == prefixes[1]/domain/f'{md5sum}_{src.name}')
+           (dst == prefixes[0]/domain/f'{md5sum}_{src.name}' or dst == prefixes[2]/domain/f'{md5sum}_{src.name}')
 
 
-@pytest.mark.parametrize('payload_copy_params', [[0o400, 0o400]], indirect=True)
+@pytest.mark.parametrize('payload_copy_params', [[0o400, -1, 0o400]], indirect=True)
 def test_payload_copy_fail(payload_copy_params):
     (src, prefixes, domain) = payload_copy_params
 
