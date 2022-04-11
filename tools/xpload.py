@@ -123,25 +123,6 @@ def _post_data(endpoint: str, params: dict):
     return respjson['name']
 
 
-def create_tag_type(name="test"):
-    return _post_data('gttype', {"name": name})
-
-def create_tag_status(name="test"):
-    return _post_data('gtstatus', {"name": name})
-
-def create_tag(name, type_name: str, status_name: str):
-    return _post_data('gt', {"name": name, "status": status_name, "type": type_name})
-
-def create_domain(name):
-    return _post_data('pt', {"name": name})
-
-def create_domain_list(tag_name, domain_name):
-    return _post_data('pl', {"global_tag": tag_name, "payload_type": domain_name})
-
-def create_payload(name, domain_list_name, start):
-    return _post_data('piov', {"payload_url": name, "payload_list": domain_list_name, "major_iov": 0, "minor_iov": start})
-
-
 def form_api_url(component: str, uid: int = None):
     url = db.url()
 
@@ -307,55 +288,6 @@ def fetch_payloads(tag: str, domain: str, start: int):
     return respjson
 
 
-def insert_payload(tag: str, domain: str, payload: str, start: int = 0):
-    """ Inserts an entry into corresponding tables """
-
-    # Select the last entry if exists or create a new default one
-    tag_types = fetch_entries("tag_types")
-    tag_type_name = create_tag_type() if not tag_types else tag_types[-1]['name']
-
-    tag_statuses = fetch_entries("tag_statuses")
-    tag_status_name = create_tag_status() if not tag_statuses else tag_statuses[-1]['name']
-
-    # Get all tags
-    tags = fetch_entries("tags")
-    # Select the last matching entry
-    existing_tag = next((e for e in reversed(tags) if e['name'] == tag), None)
-
-    # If the tag does not exist create one
-    if existing_tag is None:
-        tag_name = create_tag(tag, tag_type_name, tag_status_name)
-        print(f"Tag {tag} does not exist. Created {tag_name}")
-    else:
-        tag_name = existing_tag['name']
-
-    # Get all domains
-    domains = fetch_entries("domains")
-    # Select the last matching entry
-    existing_domain = next((e for e in reversed(domains) if e['name'] == domain), None)
-
-    # If the domain does not exist create one
-    if existing_domain is None:
-        domain_name = create_domain(domain)
-        print(f"Domain {domain} does not exist. Created {domain_name}")
-    else:
-        domain_name = existing_domain['name']
-
-    # Check if domain_list with tag_name and domain_name exists
-    domain_lists = fetch_entries("domain_lists")
-    # Select the last matching entry
-    existing_domain_list = next((e for e in reversed(domain_lists) if e['global_tag'] == tag_name and e['payload_type'] == domain_name), None)
-
-    # If either tag or domain did not exist, create a new domain_list
-    if existing_tag is None or existing_domain is None or existing_domain_list is None:
-        domain_list_name = create_domain_list(tag_name, domain_name)
-    else:
-        domain_list_name = existing_domain_list['name']
-
-    payload_name = create_payload(payload, domain_list_name, start)
-    print(f"Payload {payload} does not exist. Created {payload_name}")
-
-
 def act_on(args):
     if args.action == 'config':
         config_dict = db._asdict()
@@ -382,9 +314,6 @@ def act_on(args):
         except Exception as e:
             print("Error:", e)
             sys.exit(os.EX_OSFILE)
-
-    if args.action == 'insert':
-        insert_payload(args.tag, args.domain, args.payload, args.start)
 
     if args.action == 'fetch':
         respjson = fetch_payloads(args.tag, args.domain, args.start)
@@ -468,13 +397,6 @@ if __name__ == "__main__":
 
     # Action: push
     parser_push = subparsers.add_parser("push", help="Push staged payload interval list")
-
-    # Action: insert
-    parser_insert = subparsers.add_parser("insert", help="Insert an entry")
-    parser_insert.add_argument("tag", type=str, help="Tag for the payload file")
-    parser_insert.add_argument("domain", type=str, help="Domain of the payload file")
-    parser_insert.add_argument("payload", type=str, help=f"Payload file name")
-    parser_insert.add_argument("-s", "--start", type=int, default=0, help="Start of interval when the payload is applied")
 
     # Action: fetch
     parser_fetch = subparsers.add_parser("fetch", help="Fetch one or more payload entries")
