@@ -57,6 +57,11 @@ def nestednamedtuple(obj):
         return obj
 
 
+def _vlprint(minverb, msg):
+    if db.verbosity >= minverb:
+        print(f"VL{minverb}:", msg)
+
+
 class DbConfig(namedtuple('DbConfig', ['cfgf', 'host', 'port', 'apiroot', 'apiver', 'path'])):
     __slots__ = ()
 
