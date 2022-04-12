@@ -151,6 +151,28 @@ def _post_data(endpoint: str, params: dict):
     return respjson
 
 
+def _put_data(endpoint: str, params: dict):
+    """ Put data to the endpoint """
+
+    if endpoint not in ['pl_attach', 'piov_attach', 'gt_change_status']:
+        raise RuntimeError(f"Wrong endpoint {endpoint}")
+
+    url = db.url() + "/" + endpoint
+    _vlprint(3, f"-H 'Content-Type: application/json' -X PUT -d '{json.dumps(params)}' {url}")
+
+    respjson = None
+    try:
+        response = requests.put(url=url, json=params)
+        response.raise_for_status()
+        respjson = response.json()
+        jsonschema.validate(respjson, general_schema)
+    except Exception as e:
+        respmsg = f"{json.dumps(respjson)} " if respjson else ""
+        raise RuntimeError(f"Unexpected response for PUT '{json.dumps(params)}' {url}: " + respmsg + repr(e))
+
+    return respjson['name'] if 'name' in respjson else respjson['id']
+
+
 def form_api_url(component: str, uid: int = None):
     url = db.url()
 
