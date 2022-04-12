@@ -103,6 +103,28 @@ def config_db(config_name):
     return []
 
 
+def _get_data(endpoint: str, params: dict = {}):
+    """ Get data from the endpoint """
+
+    endpoints = ['gtPayloadLists']
+    for ep in endpoints:
+        if ep not in endpoint:
+            raise RuntimeError(f"Wrong endpoint {endpoint}")
+
+    url = db.url() + "/" + endpoint
+    _vlprint(3, f"-H 'Content-Type: application/json' -X GET -d '{json.dumps(params)}' {url}")
+
+    try:
+        response = requests.get(url=url, json=params)
+        response.raise_for_status()
+        respjson = response.json()
+    except Exception as e:
+        respmsg = f"{json.dumps(respjson)} " if respjson else ""
+        raise RuntimeError(f"Unexpected response for GET {json.dumps(params)} {url}: " + respmsg + repr(e))
+
+    return respjson
+
+
 def _post_data(endpoint: str, params: dict):
     """ Post data to the endpoint """
 
