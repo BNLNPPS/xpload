@@ -264,12 +264,42 @@ def payload_copy(payload_file: pathlib.Path, prefixes: list[pathlib.Path], domai
     return destination
 
 
-def add(domain: str, payload: pathlib.Path, start: int, end: int = None):
+def add_tag(tag_name: str, tag_type: str, tag_status: str, tag_domains: list[str] = []):
+    # Remove duplicates in tag_domains
+    tag_domains = list(set(tag_domains))
+    # Use staged tags if exist
+    tags_file = pathlib.Path.cwd()/".xpload"/"tags.json"
+    # A list of payload intervals loaded from tags_file
+    tags = []
+
+    try:
+        tags = json.load(tags_file.open())
+    except OSError: # File not found. Create it silently
+        tags_file.parent.mkdir(exist_ok=True)
+    except json.JSONDecodeError as e: # json is not valid
+        raise RuntimeError("Found invalid tags stage. Fix or remove and try again: " + repr(e))
+
+    # Select a tag to update from the existing tags if any
+    existing_tags = [indx for indx, tag in enumerate(tags) if tag['name'] == tag_name]
+
+    if len(existing_tags) >= 2:
+        raise RuntimeError(f"Found invalid tags stage. Only one entry for \"{tag_name}\" can be staged")
+
+    # Remove tags with name tag_name if exist
+    tags = [tag for tag in tags if tag['name'] != tag_name]
+    # Insert updated tag
+    tag_entry = dict(name=tag_name, type=tag_type, status=tag_status, domains=tag_domains)
+    tags.append(tag_entry)
+
+    tags_file.write_text(json.dumps(tags, indent=2))
+
+
+def add_pil(tag: str, domain: str, payload: pathlib.Path, start: int, end: int = None):
     # Make assumptions about input values
     if end:
-        assert end > start
+        assert start > 0 and end > start, "start must be greater than zero, end must be greater than start"
     # Use staged pils if exist
-    pils_file = pathlib.Path.cwd()/".xpload"/"pils.json"
+    pils_file = pathlib.Path.cwd()/'.xpload'/'pils.json'
     # A list of payload intervals loaded from pils_file
     pils = []
 
@@ -278,13 +308,13 @@ def add(domain: str, payload: pathlib.Path, start: int, end: int = None):
     except OSError: # File not found. Create it silently
         pils_file.parent.mkdir(exist_ok=True)
     except json.JSONDecodeError as e: # json is not valid
-        raise RuntimeError("Found invalid stage. Fix or remove and try again: " + repr(e))
+        raise RuntimeError("Found invalid pils stage. Fix or remove and try again: " + repr(e))
 
     # Select a pil to update from the existing pils if any
-    existing_pils = [indx for indx, pil in enumerate(pils) if pil['domain'] == domain]
+    existing_pils = [indx for indx, pil in enumerate(pils) if pil['tag'] == tag and pil['domain'] == domain]
 
     if len(existing_pils) >= 2:
-        raise RuntimeError(f"Found invalid stage. Only one payload list for \"{domain}\" can be staged")
+        raise RuntimeError(f"Found invalid pils stage. Only one entry for '{tag}' and '{domain}' can be staged")
 
     # Get payloads from the existing pil if any and update
     payloads = pils.pop(existing_pils[0])['payloads'] if existing_pils else []
@@ -293,8 +323,8 @@ def add(domain: str, payload: pathlib.Path, start: int, end: int = None):
     # Finally, insert new payload with the requested parameters
     payloads.append(dict(path=str(payload), start=start, end=end))
     # Insert updated pil
-    domain_entry = dict(domain=domain, payloads=payloads)
-    pils.append(domain_entry)
+    pil_entry = dict(tag=tag, domain=domain, payloads=payloads)
+    pils.append(pil_entry)
 
     pils_file.write_text(json.dumps(pils, indent=2))
 
@@ -353,7 +383,10 @@ def act_on(args):
 
     if args.action == 'add':
         try:
-            add(args.domain, args.payload, args.start, args.end)
+            if args.subaction == 'tag':
+                add_tag(args.name, args.type, args.status, args.domains)
+            if args.subaction == 'pil':
+                add_pil(args.tag, args.domain, args.payload, args.start, args.end)
         except Exception as e:
             print("Error:", e)
             sys.exit(os.EX_OSFILE)
@@ -440,10 +473,21 @@ if __name__ == "__main__":
 
     # Action: add
     parser_add = subparsers.add_parser("add", help="Stage payload intervals")
-    parser_add.add_argument("domain", type=NonEmptyStr, help="Domain of the payload file")
-    parser_add.add_argument("payload", type=FilePathType, help=f"Payload file")
-    parser_add.add_argument("-s", "--start", type=NonNegativeInt, default=0, help="A non-negative integer representing the start of interval when the payload is applied")
-    parser_add.add_argument("-e", "--end", type=NonNegativeInt, default=None, help="A non-negative integer representing the end of interval when the payload is applied")
+
+    subparsers_add = parser_add.add_subparsers(dest="subaction", required=True, help="Choose one")
+
+    parser_add_tag = subparsers_add.add_parser("tag", help="Add a tag for payload intervals")
+    parser_add_tag.add_argument("name", type=NonEmptyStr, help="Tag name")
+    parser_add_tag.add_argument("-t", "--type", type=NonEmptyStr, default='online', help="Tag type")
+    parser_add_tag.add_argument("-s", "--status", type=NonEmptyStr, default='unlocked', help="Tag status")
+    parser_add_tag.add_argument("-d", "--domains", type=NonEmptyStr, nargs='+', default=[], help="Link new domains to the tag")
+
+    parser_add_pil = subparsers_add.add_parser("pil", help="Add a payload interval")
+    parser_add_pil.add_argument("tag", type=NonEmptyStr, help="Tag of the payload file")
+    parser_add_pil.add_argument("domain", type=NonEmptyStr, help="Domain of the payload file")
+    parser_add_pil.add_argument("payload", type=FilePathType, help=f"Payload file")
+    parser_add_pil.add_argument("-s", "--start", type=NonNegativeInt, default=0, help="A non-negative integer representing the start of interval when the payload is applied")
+    parser_add_pil.add_argument("-e", "--end", type=NonNegativeInt, default=None, help="A non-negative integer representing the end of interval when the payload is applied")
 
     # Action: push
     parser_push = subparsers.add_parser("push", help="Push staged payload interval list")
