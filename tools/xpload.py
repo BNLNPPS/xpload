@@ -35,6 +35,19 @@ general_schema = {
     }
 }
 
+tags_schema = {
+    "type": "array",
+    "items": {
+        "properties" : {
+            "name" : {"type" : "string"},
+            "type" : {"type" : "string"},
+            "status" : {"type" : "string"},
+            "domains" : {"type" : "array", "items": {"type": "string"}}
+        },
+        "required": ["name", "type", "status", "domains"]
+    }
+}
+
 
 from collections import namedtuple
 
@@ -329,11 +342,38 @@ def add_pil(tag: str, domain: str, payload: pathlib.Path, start: int, end: int =
     pils_file.write_text(json.dumps(pils, indent=2))
 
 
-def push():
-    pils_file = pathlib.Path.cwd()/".xpload"/"pils.json"
+def push_tags():
+    """ Push all staged tags. The policy is to push all or nothing. If there is
+    an error nothing should be pushed but the current API for tag creation never
+    fails.
+    """
+    tags_file = pathlib.Path.cwd()/'.xpload'/'tags.json'
+
+    try:
+        tags = json.load(tags_file.open())
+        jsonschema.validate(tags, tags_schema)
+    except OSError as e:
+        raise RuntimeError("No stage found. Use \"add\" action to stage tags: " + repr(e))
+    except (json.JSONDecodeError, jsonschema.exceptions.ValidationError) as e:
+        raise RuntimeError("Invalid stage found. Fix or remove the stage and try again: " + repr(e))
+
+    for tag in tags:
+        response = create_and_link_tag(tag['name'], tag['type'], tag['status'], tag['domains'])
+        _vlprint(1, f'Creating tag {tag["name"]}... {response}')
+
+    # Assume all tags were pushed succesfully and remove the file
+    tags_file.unlink()
+
+
+def push_pils():
+    """ Push all staged payload intervals. The policy is to push all or nothing.
+    If there is an error nothing should be pushed.
+    """
+    pils_file = pathlib.Path.cwd()/'.xpload'/'pils.json'
 
     try:
         pils = json.load(pils_file.open())
+        # XXX validate pils json schema
     except OSError as e:
         raise RuntimeError("No stage found. Use \"add\" action to stage intervals: " + repr(e))
     except json.JSONDecodeError as e:
@@ -342,10 +382,32 @@ def push():
     prefixes = db.path if isinstance(db.path, list) else [db.path]
     prefixes = [pathlib.Path(prefix) for prefix in prefixes]
 
-    copy_args = [(pathlib.Path(payload['path']), prefixes, pil['domain']) for pil in pils for payload in pil['payloads']]
+    def push_pil(dry_run=True):
+        for pil in pils:
+            for payload in pil['payloads']:
+                copy_args = (pathlib.Path(payload['path']), prefixes, pil['domain'])
+                destination = payload_copy(*copy_args, dry_run)
+                _vlprint(2+int(dry_run), f"Copying payload file {destination}...")
+                create_and_link_pil(pil['tag'], pil['domain'], destination.name, payload['start'], payload['end'], dry_run)
 
-    for payload_copy_args in copy_args:
-        payload_copy(*payload_copy_args, True)
+    # Do a dry run first
+    _vlprint(3, "Dry run")
+    push_pil(True)
+    # Can proceed if the above passed without exceptions
+    _vlprint(3, "Real run")
+    push_pil(False)
+    # Assume all pils were pushed succesfully and remove the file
+    pils_file.unlink()
+
+
+def push():
+    tags_file = pathlib.Path.cwd()/'.xpload'/'tags.json'
+    pils_file = pathlib.Path.cwd()/'.xpload'/'pils.json'
+
+    if not tags_file.exists() and not pils_file.exists():
+        raise RuntimeError("No stage found. Use 'add' action to stage tags and/or pils")
+    if tags_file.exists(): push_tags()
+    if pils_file.exists(): push_pils()
 
 
 def fetch_payloads(tag: str, domain: str, start: int):
