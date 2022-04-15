@@ -23,16 +23,20 @@ general_schema = {
         "entry": {
             "properties" : {
                 "id" : {"type" : "integer"},
-                "name" : {"type" : "string"}
-            },
-            "required": ["id"]
+                "name" : {
+                    "oneOf": [
+                        {"type": "string"},
+                        {"type": "array", "items": {"type": "string"}}
+                    ]
+                },
+                "detail" : {"type" : "string"}
+            }
         }
     },
-
-    "type": "array",
-    "items": {
-        "$ref": "#/definitions/entry"
-    }
+    "oneOf": [
+        {"type": "object", "$ref": "#/definitions/entry"},
+        {"type": "array", "items": {"$ref": "#/definitions/entry"}}
+    ]
 }
 
 tags_schema = {
