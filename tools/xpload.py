@@ -190,6 +190,37 @@ def _put_data(endpoint: str, params: dict):
     return respjson['name'] if 'name' in respjson else respjson['id']
 
 
+def create_and_link_tag(tag_name: str, tag_type: str, tag_status: str, domains: list[str]):
+    _post_data('gttype', {"name": tag_type})
+    _post_data('gtstatus', {"name": tag_status})
+    response = _post_data('gt', {"name": tag_name, "status": tag_status, "type": tag_type})['name']
+    for domain in domains:
+        _post_data('pt', {"name": domain})
+        try:
+            pill = _get_data(f'gtPayloadLists/{tag_name}')[domain]
+        except:
+            pill = _post_data('pl', {"payload_type": domain})['name']
+        _put_data('pl_attach', {"global_tag": tag_name, "payload_list": pill})
+    # Entities created if not existed but it is not an error
+    return 'ok' if response == tag_name else response
+
+
+def create_and_link_pil(tag: str, domain: str, name: str, start: int, end: int, dry_run: bool):
+    try:
+        pill = _get_data(f'gtPayloadLists/{tag}')[domain]
+    except Exception as e:
+        raise RuntimeError(f"{tag}/{domain} does not exist: " + repr(e))
+
+    if dry_run: return
+
+    params = {"payload_url": name, "minor_iov": start, "major_iov": 0}
+    if end:
+        params["minor_iov_end"] = end
+    piov_id = _post_data('piov', params)['id']
+    _put_data('piov_attach', {"piov_id": piov_id, "payload_list": pill})
+    return 'ok'
+
+
 def form_api_url(component: str, uid: int = None):
     url = db.url()
 
