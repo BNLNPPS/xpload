@@ -522,7 +522,7 @@ def pprint_payload(respjson, dump: bool):
         print(json.dumps(respjson, indent=4))
     else:
         objs = nestednamedtuple(respjson)
-        paths = [str(payload_exists(p.payload_url)) for o in objs for p in o.payload_iov if payload_exists(p.payload_url)]
+        paths = [str(payload_exists(f'{o.payload_type}/{p.payload_url}')) for o in objs for p in o.payload_iov if payload_exists(f'{o.payload_type}/{p.payload_url}')]
         if paths:
             print("\n".join(paths))
         else:
