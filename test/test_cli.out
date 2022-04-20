@@ -1,15 +1,24 @@
+Creating tag tag_1... ok
+Creating tag tag_2... ok
+Creating tag tag_3... ok
+Copying payload file /tmp/path/to/payload/data1/domain_1/70e0cda3676d2781e0b9184def750859_payload_00.data...
+Copying payload file /tmp/path/to/payload/data1/domain_2/4b79a39ae5ee1cdd7cb46e6fc45dbbde_payload_01.data...
+Copying payload file /tmp/path/to/payload/data1/domain_1/3d238663f8c4d18146029b0516a8ca7b_payload_10.data...
+Copying payload file /tmp/path/to/payload/data1/domain_2/6393f30b4adced495ec8da625649e7fd_payload_11.data...
+Copying payload file /tmp/path/to/payload/data1/domain_3/47020eedb8c1b62fdc54b50e7cded0ce_payload_N0.data...
 tag_1
 tag_2
 tag_3
 domain_1
 domain_2
-/tmp/path/to/payload/data0/payload_00.data
-/tmp/path/to/payload/data0/payload_01.data
-/tmp/path/to/payload/data0/payload_00.data
-/tmp/path/to/payload/data0/payload_00.data
-/tmp/path/to/payload/data0/payload_01.data
-/tmp/path/to/payload/data0/payload_00.data
-No payload file was found in any prefix
-/tmp/path/to/payload/data1/payload_10.data
-/tmp/path/to/payload/data1/payload_11.data
-No payload file was found in any prefix
+domain_3
+/tmp/path/to/payload/data1/domain_1/70e0cda3676d2781e0b9184def750859_payload_00.data
+/tmp/path/to/payload/data1/domain_2/4b79a39ae5ee1cdd7cb46e6fc45dbbde_payload_01.data
+/tmp/path/to/payload/data1/domain_1/70e0cda3676d2781e0b9184def750859_payload_00.data
+/tmp/path/to/payload/data1/domain_1/70e0cda3676d2781e0b9184def750859_payload_00.data
+/tmp/path/to/payload/data1/domain_2/4b79a39ae5ee1cdd7cb46e6fc45dbbde_payload_01.data
+/tmp/path/to/payload/data1/domain_1/70e0cda3676d2781e0b9184def750859_payload_00.data
+Error: FileExistsError No payload file was found in any prefix
+/tmp/path/to/payload/data1/domain_1/3d238663f8c4d18146029b0516a8ca7b_payload_10.data
+/tmp/path/to/payload/data1/domain_2/6393f30b4adced495ec8da625649e7fd_payload_11.data
+Error: FileExistsError No payload file was found in any prefix
