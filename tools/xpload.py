@@ -106,26 +106,27 @@ def config_db(config_name):
 def _post_data(endpoint: str, params: dict):
     """ Post data to the endpoint """
 
-    if endpoint not in ['gttype', 'gtstatus', 'gt', 'pt', 'pl', 'piov']:
-        print(f"Error: Wrong endpoint {endpoint}")
-        return None
+    if endpoint not in ['gttype', 'gtstatus', 'gt', 'pt', 'pl', 'piov', 'pil', 'tag']:
+        raise RuntimeError(f"Wrong endpoint {endpoint}")
 
     url = db.url() + "/" + endpoint
+    _vlprint(3, f"-H 'Content-Type: application/json' -X POST -d '{json.dumps(params)}' {url}")
 
+    respjson = None
     try:
         response = requests.post(url=url, json=params)
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code < 400 or e.response.status_code >= 500:
+                raise
         respjson = response.json()
-    except:
-        print(f"Error: Something went wrong while posting {json.dumps(params)} to {url}")
-        return None
+        jsonschema.validate(respjson, general_schema)
+    except Exception as e:
+        respmsg = f"{json.dumps(respjson)} " if respjson else ""
+        raise RuntimeError(f"Unexpected response for POST '{json.dumps(params)}' {url}: " + respmsg + repr(e))
 
-    try:
-        jsonschema.validate(respjson, general_schema['definitions']['entry'])
-    except:
-        print(f"Error: Encountered invalid response while posting {json.dumps(params)} to {url}")
-        return None
-
-    return respjson['name']
+    return respjson
 
 
 def form_api_url(component: str, uid: int = None):
