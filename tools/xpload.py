@@ -75,11 +75,13 @@ def nestednamedtuple(obj):
 
 
 def _vlprint(minverb, msg):
+    if db.verbosity >= 3:
+        print(f"VL{minverb}:", end="")
     if db.verbosity >= minverb:
-        print(f"VL{minverb}:", msg)
+        print(msg)
 
 
-class DbConfig(namedtuple('DbConfig', ['cfgf', 'host', 'port', 'apiroot', 'apiver', 'path'])):
+class DbConfig(namedtuple('DbConfig', ['cfgf', 'host', 'port', 'apiroot', 'apiver', 'path', 'verbosity'])):
     __slots__ = ()
 
     def __new__(cls, cfgf, **kwargs):
@@ -91,7 +93,7 @@ class DbConfig(namedtuple('DbConfig', ['cfgf', 'host', 'port', 'apiroot', 'apive
         return "http://" + self.host + ':' + self.port + self.apiroot
 
 
-def config_db(config_name):
+def config_db(config_name, verbosity: int = None):
     """ Read database parameters from a json config file """
 
     # Use user supplied config as is if it looks like a "path"
@@ -109,15 +111,21 @@ def config_db(config_name):
     else:
         config_file = f"{XPLOAD_CONFIG}.json"
 
+    config = []
     for config_path in search_paths:
         try:
             with open(f"{config_path}/{config_file}") as cfgf:
-                return json.load(cfgf, object_hook=lambda d: DbConfig(os.path.realpath(cfgf.name), **d))
+                config = json.load(cfgf, object_hook=lambda d: DbConfig(os.path.realpath(cfgf.name), **d))
         except:
             pass
 
-    print(f"Error: Cannot find config file {config_file} in", search_paths)
-    return []
+    if config:
+        if verbosity:
+            config['verbosity'] = verbosity
+    else:
+        print(f"Error: Cannot find config file {config_file} in", search_paths)
+
+    return config
 
 
 def _get_data(endpoint: str, params: dict = {}):
@@ -558,7 +566,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Manipulate payload entries")
     parser.add_argument("-c", "--config", type=str, default="", help="Config file with database connection parameters")
     parser.add_argument("-d", "--dump", action='store_true', default=False, help="Dump response as json instead of pretty printing it")
-    parser.add_argument("-v", "--version", action='version', version=__version__)
+    parser.add_argument(      "--version", action='version', version=__version__)
+    parser.add_argument("-v", "--verbosity", type=NonNegativeInt, default=None, help="Verbosity level")
 
     # Parse various actions
     subparsers = parser.add_subparsers(dest="action", required=True, help="Choose one of the actions")
@@ -602,7 +611,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     global db
-    db = config_db(args.config)
+    db = config_db(args.config, args.verbosity)
 
     if not db:
         sys.exit(os.EX_CONFIG)
