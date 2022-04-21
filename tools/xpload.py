@@ -519,8 +519,10 @@ def pprint_tags(respjson, dump: bool):
         print(json.dumps(respjson, indent=4))
     else:
         objs = nestednamedtuple(respjson)
-        for o in objs:
-            print(f"{o.name}")
+        tuples = [(o.name,) for o in objs]
+        tuples = sorted(tuples, key=lambda tup: (tup[0],))
+        for t in tuples:
+            print(*t)
 
 
 def pprint_payload(respjson, dump: bool):
@@ -532,7 +534,7 @@ def pprint_payload(respjson, dump: bool):
         objs = nestednamedtuple(respjson)
         paths = [str(payload_exists(f'{o.payload_type}/{p.payload_url}')) for o in objs for p in o.payload_iov if payload_exists(f'{o.payload_type}/{p.payload_url}')]
         if paths:
-            print("\n".join(paths))
+            print("\n".join(sorted(paths)))
         else:
             raise FileExistsError("No payload file was found in any prefix")
 
