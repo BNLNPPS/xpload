@@ -198,7 +198,7 @@ def _put_data(endpoint: str, params: dict):
     return respjson['name'] if 'name' in respjson else respjson['id']
 
 
-def create_and_link_tag(tag_name: str, tag_type: str, tag_status: str, domains: list[str]):
+def create_and_link_tag(tag_name: str, tag_type: str, tag_status: str, domains: list):
     _post_data('gttype', {"name": tag_type})
     _post_data('gtstatus', {"name": tag_status})
     response = _post_data('gt', {"name": tag_name, "status": tag_status, "type": tag_type})['name']
@@ -288,7 +288,7 @@ def payload_exists(payload_name: str) -> pathlib.Path:
     return None
 
 
-def payload_copy(payload_file: pathlib.Path, prefixes: list[pathlib.Path], domain: str, dry_run=False) -> pathlib.Path:
+def payload_copy(payload_file: pathlib.Path, prefixes: list, domain: str, dry_run=False) -> pathlib.Path:
     """ Copies `payload_file` to the first valid `prefix` from the `prefixes` list """
 
     # Check if file exists
@@ -322,7 +322,7 @@ def payload_copy(payload_file: pathlib.Path, prefixes: list[pathlib.Path], domai
     return destination
 
 
-def add_tag(tag_name: str, tag_type: str, tag_status: str, tag_domains: list[str] = []):
+def add_tag(tag_name: str, tag_type: str, tag_status: str, tag_domains: list = []):
     # Remove duplicates in tag_domains
     tag_domains = list(set(tag_domains))
     # Use staged tags if exist

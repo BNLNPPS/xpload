@@ -8,7 +8,7 @@ DATA_DIR_1=`xpl config path 1`
 rm -fr   $DATA_DIR_0 $DATA_DIR_1
 mkdir -p $DATA_DIR_1
 
-randfile() { python -c 'import random, sys; random.seed(int(sys.argv[1])); sys.stdout.buffer.write(random.randbytes(1000))' "$@"; }
+randfile() { python -c 'import random, sys; random.seed(int(sys.argv[1])); sys.stdout.buffer.write(bytes([random.getrandbits(8) for _ in range(1000)]))' "$@"; }
 
 randfile 1 > /tmp/payload_00.data
 randfile 2 > /tmp/payload_01.data
