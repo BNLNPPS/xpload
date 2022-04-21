@@ -7,7 +7,7 @@ RUN dnf install -y python3.9 gcc-toolset-10-gcc-c++ openssl-devel \
 
 # Install CMake and curl
 RUN cd /tmp \
- && curl -L https://github.com/Kitware/CMake/releases/download/v3.21.3/cmake-3.21.3-linux-x86_64.tar.gz | tar -xz --strip-components 1 -C /usr \
+ && curl -L https://github.com/Kitware/CMake/releases/download/v3.23.1/cmake-3.23.1-linux-x86_64.tar.gz | tar -xz --strip-components 1 -C /usr \
  && curl -L https://github.com/curl/curl/releases/download/curl-7_79_1/curl-7.79.1.tar.gz | tar -xz \
  && cd curl-7.79.1 && cmake -S . -B build && cmake --build build -j 4 && cmake --install build --prefix /usr \
  && rm -fr /tmp/*
