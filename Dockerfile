@@ -1,4 +1,6 @@
-FROM rockylinux:8.5 AS build-stage
+ARG baseos=rockylinux:8.5
+
+FROM ${baseos} AS build-stage
 
 SHELL ["/bin/bash", "--login", "-c"]
 
@@ -26,7 +28,7 @@ RUN python3 -m venv $VIRTUAL_ENV \
  && pip install -r xpload/tools/requirements.txt
 
 
-FROM rockylinux:8.5 AS run-stage
+FROM ${baseos} AS run-stage
 
 SHELL ["/bin/bash", "-c"]
 
