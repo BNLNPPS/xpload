@@ -15,7 +15,6 @@ try:
 except ImportError:
     __version__ = "0.0.0-notinstalled"
     XPLOAD_CONFIG_SEARCH_PATHS = [".", "config"]
-    pass
 
 
 general_schema = {
@@ -326,7 +325,7 @@ def add_tag(tag_name: str, tag_type: str, tag_status: str, tag_domains: list = [
     # Remove duplicates in tag_domains
     tag_domains = list(set(tag_domains))
     # Use staged tags if exist
-    tags_file = pathlib.Path.cwd()/".xpload"/"tags.json"
+    tags_file = pathlib.Path.cwd()/'.xpload'/'tags.json'
     # A list of payload intervals loaded from tags_file
     tags = []
 
@@ -583,7 +582,6 @@ if __name__ == "__main__":
 
     # Action: add
     parser_add = subparsers.add_parser("add", help="Stage payload intervals")
-
     subparsers_add = parser_add.add_subparsers(dest="subaction", required=True, help="Choose one")
 
     parser_add_tag = subparsers_add.add_parser("tag", help="Add a tag for payload intervals")
