@@ -1,14 +1,18 @@
-**xpload** is a C++ library to communicate with a calibration database via
-`libcurl`
+**xpload** provides a library and a CLI tool to communicate with and manage
+conditions databases with externally stored payloads. A conditions database
+supports retrievals of version-controlled payload data for specific time
+intervals requested by a client.
 
+[![CI Build Status](https://github.com/bnlnpps/xpload/actions/workflows/ci-build/badge.svg)](https://github.com/BNLNPPS/xpload/actions/workflows/ci-build.yml)
 [![DOI](https://zenodo.org/badge/419745626.svg)](https://zenodo.org/badge/latestdoi/419745626)
 
 
 ## Prerequisites
 
-- C++17 (gcc 10.2.1)
+- C++17, gcc 8.5
 - CMake 3.20
-- libcurl (7.79.1)
+- libcurl 7.79.1
+- python 3.8
 
 ## Quick Start
 
@@ -31,22 +35,37 @@ Install the package
 ### CLI tool
 
 The entries in the database can be managed with a command line utility `xpl`.
-Let's say you would like to add a payload file `payload1` that belongs to a
-group of payloads associated with a particular subsystem or running conditions
-that we will refer to as `domain1`. In case we will need to fetch multiple
-payloads for various subsystems, we will also associated this payload with a
-global label called `tag1`.
+Let's say you would like to add two payload files `payload1.data` and
+`payload2.data` which belong to two groups associated with some subsystems or
+running conditions that we will refer to as `domain1` and `domain2`
+respectively. In turn, the both of the domains can be associated with a label
+which we will call `tag1` in this example. Assigning a tag will make it easy to
+fetch multiple payloads for various subsystems associated with it.
 
 ```shell
-xpl insert tag1 domain1 payload1
+xpl add tag tag1 -t tag1_type -s tag1_status -d domain1 domain2
+xpl add pil tag1 domain1 /tmp/payload1.data -s 11 -e 33
+xpl add pil tag1 domain2 /tmp/payload2.data -s 22 -e 33
+xpl push
 ```
 
-Existing entries can be viewed with the following commands:
+Existing entries can be listed with the following commands:
 
 ```shell
 xpl show tags
 xpl show domains
 ```
+
+Finally, we can query the database with a specific time to see if there is a
+payload file available for the matching interval:
+
+```shell
+xpl fetch tag1
+xpl fetch tag1 -d domain2
+xpl fetch tag1 -s 15 -d domain2
+xpl fetch tag1 -s 15 -d domain1
+```
+
 
 ### In a C++ client
 
