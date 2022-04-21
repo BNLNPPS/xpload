@@ -75,13 +75,13 @@ def nestednamedtuple(obj):
 
 
 def _vlprint(minverb, msg):
-    if db.verbosity >= 3:
+    if cfg.verbosity >= 3:
         print(f"VL{minverb}:", end="")
-    if db.verbosity >= minverb:
+    if cfg.verbosity >= minverb:
         print(msg)
 
 
-class DbConfig(namedtuple('DbConfig', ['cfgf', 'host', 'port', 'apiroot', 'apiver', 'path', 'verbosity'])):
+class Config(namedtuple('Config', ['cfgf', 'host', 'port', 'apiroot', 'apiver', 'path', 'verbosity'])):
     __slots__ = ()
 
     def __new__(cls, cfgf, **kwargs):
@@ -93,13 +93,13 @@ class DbConfig(namedtuple('DbConfig', ['cfgf', 'host', 'port', 'apiroot', 'apive
         return "http://" + self.host + ':' + self.port + self.apiroot
 
 
-def config_db(config_name, verbosity: int = None):
+def read_config(config_name, verbosity: int = None):
     """ Read database parameters from a json config file """
 
     # Use user supplied config as is if it looks like a "path"
     if "." in config_name or "/" in config_name:
         with open(f"{config_name}") as cfgf:
-            return json.load(cfgf, object_hook=lambda d: DbConfig(os.path.realpath(cfgf.name), **d))
+            return json.load(cfgf, object_hook=lambda d: Config(os.path.realpath(cfgf.name), **d))
 
     XPLOAD_CONFIG_DIR = os.getenv('XPLOAD_CONFIG_DIR', "").rstrip("/")
     XPLOAD_CONFIG = os.getenv('XPLOAD_CONFIG', "prod")
@@ -115,7 +115,7 @@ def config_db(config_name, verbosity: int = None):
     for config_path in search_paths:
         try:
             with open(f"{config_path}/{config_file}") as cfgf:
-                config = json.load(cfgf, object_hook=lambda d: DbConfig(os.path.realpath(cfgf.name), **d))
+                config = json.load(cfgf, object_hook=lambda d: Config(os.path.realpath(cfgf.name), **d))
         except:
             pass
 
@@ -136,7 +136,7 @@ def _get_data(endpoint: str, params: dict = {}):
         if ep not in endpoint:
             raise RuntimeError(f"Wrong endpoint {endpoint}")
 
-    url = db.url() + "/" + endpoint
+    url = cfg.url() + "/" + endpoint
     _vlprint(3, f"-H 'Content-Type: application/json' -X GET -d '{json.dumps(params)}' {url}")
 
     try:
@@ -156,7 +156,7 @@ def _post_data(endpoint: str, params: dict):
     if endpoint not in ['gttype', 'gtstatus', 'gt', 'pt', 'pl', 'piov', 'pil', 'tag']:
         raise RuntimeError(f"Wrong endpoint {endpoint}")
 
-    url = db.url() + "/" + endpoint
+    url = cfg.url() + "/" + endpoint
     _vlprint(3, f"-H 'Content-Type: application/json' -X POST -d '{json.dumps(params)}' {url}")
 
     respjson = None
@@ -182,7 +182,7 @@ def _put_data(endpoint: str, params: dict):
     if endpoint not in ['pl_attach', 'piov_attach', 'gt_change_status']:
         raise RuntimeError(f"Wrong endpoint {endpoint}")
 
-    url = db.url() + "/" + endpoint
+    url = cfg.url() + "/" + endpoint
     _vlprint(3, f"-H 'Content-Type: application/json' -X PUT -d '{json.dumps(params)}' {url}")
 
     respjson = None
@@ -230,7 +230,7 @@ def create_and_link_pil(tag: str, domain: str, name: str, start: int, end: int, 
 
 
 def form_api_url(component: str, uid: int = None):
-    url = db.url()
+    url = cfg.url()
 
     if component == 'tags':
         url += "/gt"
@@ -278,7 +278,7 @@ def fetch_entries(component: str, uid: int = None):
 
 
 def payload_exists(payload_name: str) -> pathlib.Path:
-    prefixes = db.path if isinstance(db.path, list) else [db.path]
+    prefixes = cfg.path if isinstance(cfg.path, list) else [cfg.path]
 
     for prefix in prefixes:
         payload_file = pathlib.Path(prefix)/payload_name
@@ -424,7 +424,7 @@ def push_pils():
     except json.JSONDecodeError as e:
         raise RuntimeError("Invalid stage found. Fix or remove the stage and try again: " + repr(e))
 
-    prefixes = db.path if isinstance(db.path, list) else [db.path]
+    prefixes = cfg.path if isinstance(cfg.path, list) else [cfg.path]
     prefixes = [pathlib.Path(prefix) for prefix in prefixes]
 
     def push_pil(dry_run=True):
@@ -457,7 +457,7 @@ def push():
 
 def fetch_payloads(tag: str, domain: str, start: int):
 
-    url = f"{db.url()}/payloadiovs/?gtName={tag}&majorIOV=0&minorIOV={start}"
+    url = f"{cfg.url()}/payloadiovs/?gtName={tag}&majorIOV=0&minorIOV={start}"
 
     try:
         response = requests.get(url)
@@ -477,7 +477,7 @@ def fetch_payloads(tag: str, domain: str, start: int):
 
 def act_on(args):
     if args.action == 'config':
-        config_dict = db._asdict()
+        config_dict = cfg._asdict()
         try:
             for ix in args.field:
                 config_dict = config_dict[int(ix) if ix.isnumeric() else ix]
@@ -614,10 +614,10 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    global db
-    db = config_db(args.config, args.verbosity)
+    global cfg
+    cfg = read_config(args.config, args.verbosity)
 
-    if not db:
+    if not cfg:
         sys.exit(os.EX_CONFIG)
 
     act_on(args)
