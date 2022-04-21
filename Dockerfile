@@ -1,12 +1,30 @@
+ARG compiler=gcc8
 ARG baseos=rockylinux:8.5
 
-FROM ${baseos} AS build-stage
+FROM ${baseos} AS gcc8-prep-stage
+RUN dnf install -y gcc-c++
+
+FROM ${baseos} AS gcc9-prep-stage
+RUN dnf install -y gcc-toolset-9-gcc-c++ && echo "source /opt/rh/gcc-toolset-9/enable" >> /etc/bashrc
+
+FROM ${baseos} AS gcc10-prep-stage
+RUN dnf install -y gcc-toolset-10-gcc-c++ && echo "source /opt/rh/gcc-toolset-10/enable" >> /etc/bashrc
+
+FROM ${baseos} AS gcc11-prep-stage
+RUN dnf install -y gcc-toolset-11-gcc-c++ && echo "source /opt/rh/gcc-toolset-11/enable" >> /etc/bashrc
+
+FROM ${baseos} AS clang12-prep-stage
+RUN dnf install -y clang
+
+
+FROM $compiler-prep-stage AS base-stage
+
+ARG python=3.8
 
 # The shell command allows to pick up the changes in /etc/bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
-RUN dnf install -y python3.9 gcc-toolset-10-gcc-c++ openssl-devel \
- && echo "source /opt/rh/gcc-toolset-10/enable" >> /etc/bashrc
+RUN dnf install -y python${python} make openssl-devel
 
 # Install CMake and curl
 RUN cd /tmp \
@@ -14,6 +32,9 @@ RUN cd /tmp \
  && curl -L https://github.com/curl/curl/releases/download/curl-7_79_1/curl-7.79.1.tar.gz | tar -xz \
  && cd curl-7.79.1 && cmake -S . -B build && cmake --build build -j 4 && cmake --install build --prefix /usr \
  && rm -fr /tmp/*
+
+
+FROM base-stage AS build-stage
 
 COPY . xpload
 RUN cmake -S xpload -B build && cmake --build build && cmake --install build
