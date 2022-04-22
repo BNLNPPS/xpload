@@ -24,7 +24,7 @@ ARG python=3.8
 # The shell command allows to pick up the changes in /etc/bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
-RUN dnf install -y python${python} make openssl-devel
+RUN dnf install -y python${python} make openssl-devel diffutils
 
 # Install CMake and curl
 RUN cd /tmp \
