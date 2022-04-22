@@ -2,6 +2,7 @@ ARG baseos=rockylinux:8.5
 
 FROM ${baseos} AS build-stage
 
+# The shell command allows to pick up the changes in /etc/bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
 RUN dnf install -y python3.9 gcc-toolset-10-gcc-c++ openssl-devel \
@@ -14,13 +15,9 @@ RUN cd /tmp \
  && cd curl-7.79.1 && cmake -S . -B build && cmake --build build -j 4 && cmake --install build --prefix /usr \
  && rm -fr /tmp/*
 
-# Build xpload
 COPY . xpload
-
-RUN cmake -S xpload -B build \
- && cmake --build build \
- && cmake --install build
-
+RUN cmake -S xpload -B build && cmake --build build && cmake --install build
+# Create a virtual environment for possible debugging
 ENV VIRTUAL_ENV=/opt/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN python3 -m venv $VIRTUAL_ENV \
@@ -28,9 +25,7 @@ RUN python3 -m venv $VIRTUAL_ENV \
  && pip install -r xpload/tools/requirements.txt
 
 
-FROM ${baseos} AS run-stage
-
-SHELL ["/bin/bash", "-c"]
+FROM ${baseos}
 
 COPY --from=build-stage /usr/local/bin/xpl            /usr/local/bin/xpl
 COPY --from=build-stage /usr/local/include/xpload     /usr/local/include/xpload
