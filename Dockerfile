@@ -19,19 +19,24 @@ RUN dnf install -y clang
 
 FROM $compiler-prep-stage AS base-stage
 
-ARG python=3.8
+ARG python=3.10.4
+ARG cmake=3.23.1
+ARG curl=7.79.1
 
 # The shell command allows to pick up the changes in /etc/bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
-RUN dnf install -y python${python} make openssl-devel diffutils
+RUN dnf install -y openssl-devel zlib-devel libffi-devel make diffutils
 
-# Install CMake and curl
+# Install Python, CMake, and curl
 RUN cd /tmp \
- && curl -L https://github.com/Kitware/CMake/releases/download/v3.23.1/cmake-3.23.1-linux-x86_64.tar.gz | tar -xz --strip-components 1 -C /usr \
- && curl -L https://github.com/curl/curl/releases/download/curl-7_79_1/curl-7.79.1.tar.gz | tar -xz \
- && cd curl-7.79.1 && cmake -S . -B build && cmake --build build -j 4 && cmake --install build --prefix /usr \
- && rm -fr /tmp/*
+ && curl -sL https://www.python.org/ftp/python/${python}/Python-${python}.tgz | tar -xz \
+ && cd Python-${python} && ./configure --enable-shared --prefix=/usr && make -j 4 && make install \
+ && curl -sL https://github.com/Kitware/CMake/releases/download/v${cmake}/cmake-${cmake}-linux-x86_64.tar.gz | tar -xz --strip-components 1 -C /usr \
+ && curl -sL https://github.com/curl/curl/releases/download/curl-${curl//./_}/curl-${curl}.tar.gz | tar -xz \
+ && cd curl-${curl} && cmake -S . -B build && cmake --build build -j 4 && cmake --install build --prefix /usr \
+ && rm -fr /tmp/* \
+ && /sbin/ldconfig
 
 
 FROM base-stage AS build-stage
