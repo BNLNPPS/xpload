@@ -40,7 +40,6 @@ jobs:
         with:
           tags: ghcr.io/bnlnpps/xpload-build-${{ matrix.compiler }}-py${{ matrix.prereq.python }}
           target: build-stage
-          push: true
           build-args: |
             compiler=${{ matrix.compiler }}
             python=${{ matrix.prereq.python }}
