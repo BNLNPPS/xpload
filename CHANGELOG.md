@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.8.2] - 2022-08-30
+
+* Use cache in docker build push action by @plexoos in https://github.com/BNLNPPS/xpload/pull/33
+* Enhance docker build and GitHub action workflow by @plexoos in https://github.com/BNLNPPS/xpload/pull/31
+* Fixes and enhancements to the build process by @plexoos in https://github.com/BNLNPPS/xpload/pull/34
+* Fix compiler warnings and redefine as errors by @plexoos in https://github.com/BNLNPPS/xpload/pull/35
+* Link to std::filesystem if necessary, based on compiler by @plexoos in https://github.com/BNLNPPS/xpload/pull/37
+* README: Fix build status badge by @plexoos in https://github.com/BNLNPPS/xpload/pull/30
+* Refactor CLI xpl by @plexoos in https://github.com/BNLNPPS/xpload/pull/40
+* xpl: Switch API end point to get list of all tags by @plexoos in https://github.com/BNLNPPS/xpload/pull/39
+* test: Update condor parameters + fix CSV header by @plexoos in https://github.com/BNLNPPS/xpload/pull/44
+* README: Fix option name in example by @plexoos in https://github.com/BNLNPPS/xpload/pull/43
+* config: Introduce dry_run option by @plexoos in https://github.com/BNLNPPS/xpload/pull/45
+* fetch: Do not limit the number of returned payload paths by @plexoos in https://github.com/BNLNPPS/xpload/pull/46
+
+
+## [0.8.1] - 2022-04-25
+
+* Explicitly link standard c++ library (filesystem) by @plexoos in https://github.com/BNLNPPS/xpload/pull/26
+* Make python code compatible with 3.8 version by @plexoos in https://github.com/BNLNPPS/xpload/pull/27
+* Introduce container build arguments for compiler and python version by @plexoos in
+  https://github.com/BNLNPPS/xpload/pull/28
+
+
 ## [0.8.0] - 2022-04-20
 
 - Introduced add and push actions into xpl CLI tool
