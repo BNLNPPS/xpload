@@ -10,6 +10,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compiler: [gcc8, gcc10]
+        prereq: [ {python: 3.8}, {python: 3.9} ]
     steps:
       - name: Check out Django App
         uses: actions/checkout@v2
@@ -34,9 +38,12 @@ jobs:
       - name: Build and Push with Docker
         uses: docker/build-push-action@v2
         with:
-          tags: ghcr.io/bnlnpps/xpload-build
+          tags: ghcr.io/bnlnpps/xpload-build-${{ matrix.compiler }}-py${{ matrix.prereq.python }}
           target: build-stage
           push: true
+          build-args: |
+            compiler=${{ matrix.compiler }}
+            python=${{ matrix.prereq.python }}
 
       - name: Run xpload pytests
         run: docker run --rm --network=host -e XPLOAD_CONFIG=dev ghcr.io/bnlnpps/xpload-build pytest xpload/tools/
