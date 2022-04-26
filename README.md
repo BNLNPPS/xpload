@@ -43,9 +43,9 @@ which we will call `tag1` in this example. Assigning a tag will make it easy to
 fetch multiple payloads for various subsystems associated with it.
 
 ```shell
-xpl add tag tag1 -t tag1_type -s tag1_status -d domain1 domain2
-xpl add pil tag1 domain1 /tmp/payload1.data -s 11 -e 33
-xpl add pil tag1 domain2 /tmp/payload2.data -s 22 -e 33
+xpl add tag tag1 --type tag1_type --status tag1_status --domains domain1 domain2
+xpl add pil tag1 domain1 /tmp/payload1.data --start 11 --end 33
+xpl add pil tag1 domain2 /tmp/payload2.data --start 22 --end 33
 xpl push
 ```
 
@@ -61,9 +61,9 @@ payload file available for the matching interval:
 
 ```shell
 xpl fetch tag1
-xpl fetch tag1 -d domain2
-xpl fetch tag1 -s 15 -d domain2
-xpl fetch tag1 -s 15 -d domain1
+xpl fetch tag1 --domain domain2
+xpl fetch tag1 --start 15 --domain domain2
+xpl fetch tag1 --start 15 --domain domain1
 ```
 
 
