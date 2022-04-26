@@ -14,6 +14,8 @@ jobs:
       matrix:
         compiler: [gcc8, gcc10]
         prereq: [ {python: 3.8}, {python: 3.9} ]
+    env:
+      BUILD_LABEL: ${{ matrix.compiler }}-python${{ matrix.prereq.python }}
     steps:
       - name: Check out Django App
         uses: actions/checkout@v2
@@ -38,9 +40,9 @@ jobs:
       - name: Build and Push with Docker
         uses: docker/build-push-action@v2
         with:
-          cache-from: type=registry,ref=ghcr.io/bnlnpps/xpload-build:cache
-          cache-to:   type=registry,ref=ghcr.io/bnlnpps/xpload-build:cache,mode=max
-          tags: ghcr.io/bnlnpps/xpload-build-${{ matrix.compiler }}-py${{ matrix.prereq.python }}
+          cache-from: type=registry,ref=ghcr.io/bnlnpps/xpload-build:cache-$BUILD_LABEL
+          cache-to:   type=registry,ref=ghcr.io/bnlnpps/xpload-build:cache-$BUILD_LABEL,mode=max
+          tags: ghcr.io/bnlnpps/xpload-build-$BUILD_LABEL
           target: build-stage
           build-args: |
             compiler=${{ matrix.compiler }}
