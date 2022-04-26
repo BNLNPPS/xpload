@@ -42,7 +42,8 @@ jobs:
         with:
           cache-from: type=registry,ref=ghcr.io/bnlnpps/xpload-build:cache-${{ env.BUILD_LABEL }}
           cache-to:   type=registry,ref=ghcr.io/bnlnpps/xpload-build:cache-${{ env.BUILD_LABEL }},mode=max
-          tags: ghcr.io/bnlnpps/xpload-build-${{ env.BUILD_LABEL }}
+          tags: ghcr.io/bnlnpps/xpload-build
+          load: true
           target: build-stage
           build-args: |
             compiler=${{ matrix.compiler }}
