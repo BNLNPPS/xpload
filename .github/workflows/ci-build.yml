@@ -40,9 +40,9 @@ jobs:
       - name: Build and Push with Docker
         uses: docker/build-push-action@v2
         with:
-          cache-from: type=registry,ref=ghcr.io/bnlnpps/xpload-build:cache-$BUILD_LABEL
-          cache-to:   type=registry,ref=ghcr.io/bnlnpps/xpload-build:cache-$BUILD_LABEL,mode=max
-          tags: ghcr.io/bnlnpps/xpload-build-$BUILD_LABEL
+          cache-from: type=registry,ref=ghcr.io/bnlnpps/xpload-build:cache-${{ env.BUILD_LABEL }}
+          cache-to:   type=registry,ref=ghcr.io/bnlnpps/xpload-build:cache-${{ env.BUILD_LABEL }},mode=max
+          tags: ghcr.io/bnlnpps/xpload-build-${{ env.BUILD_LABEL }}
           target: build-stage
           build-args: |
             compiler=${{ matrix.compiler }}
