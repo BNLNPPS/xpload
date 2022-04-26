@@ -3,7 +3,7 @@ conditions databases with externally stored payloads. A conditions database
 supports retrievals of version-controlled payload data for specific time
 intervals requested by a client.
 
-[![CI Build Status](https://github.com/bnlnpps/xpload/actions/workflows/ci-build/badge.svg)](https://github.com/BNLNPPS/xpload/actions/workflows/ci-build.yml)
+[![CI Build Status](https://github.com/bnlnpps/xpload/actions/workflows/ci-build/badge.svg)](https://github.com/bnlnpps/xpload/actions/workflows/ci-build.yml)
 [![DOI](https://zenodo.org/badge/419745626.svg)](https://zenodo.org/badge/latestdoi/419745626)
 
 
@@ -18,7 +18,7 @@ intervals requested by a client.
 
 Get the code
 
-    git clone https://github.com/BNLNPPS/xpload.git
+    git clone https://github.com/bnlnpps/xpload.git
 
 Configure and build the package
 
