@@ -454,15 +454,15 @@ def push():
     if pils_file.exists(): push_pils()
 
 
-def fetch_payloads(tag: str, domain: str, start: int):
+def fetch_payloads(tag: str, domain: str, treq: int):
 
-    url = f"{cfg.url()}/payloadiovs/?gtName={tag}&majorIOV=0&minorIOV={start}"
+    url = f"{cfg.url()}/payloadiovs/?gtName={tag}&majorIOV=0&minorIOV={treq}"
 
     try:
         response = requests.get(url)
         respjson = response.json()
     except:
-        print(f"Error: Something went wrong while looking for tag {tag} and start time {start}. Check", url)
+        print(f"Error: Something went wrong while looking for tag {tag} and time {treq}. Check", url)
         return []
 
     # Always return a list
@@ -505,7 +505,7 @@ def act_on(args):
             sys.exit(os.EX_OSFILE)
 
     if args.action == 'fetch':
-        respjson = fetch_payloads(args.tag, args.domain, args.start)
+        respjson = fetch_payloads(args.tag, args.domain, args.treq)
         try:
             pprint_payload(respjson, args.dump)
         except FileExistsError as e:
@@ -591,8 +591,8 @@ if __name__ == "__main__":
     parser_add_tag.add_argument("-d", "--domains", type=NonEmptyStr, nargs='+', default=[], help="Link new domains to the tag")
 
     parser_add_pil = subparsers_add.add_parser("pil", help="Add a payload interval")
-    parser_add_pil.add_argument("tag", type=NonEmptyStr, help="Tag of the payload file")
-    parser_add_pil.add_argument("domain", type=NonEmptyStr, help="Domain of the payload file")
+    parser_add_pil.add_argument("tag", type=NonEmptyStr, help="Tag for payload intervals")
+    parser_add_pil.add_argument("domain", type=NonEmptyStr, help="Domain of payload data")
     parser_add_pil.add_argument("payload", type=FilePathType, help=f"Payload file")
     parser_add_pil.add_argument("-s", "--start", type=NonNegativeInt, default=0, help="A non-negative integer representing the start of interval when the payload is applied")
     parser_add_pil.add_argument("-e", "--end", type=NonNegativeInt, default=None, help="A non-negative integer representing the end of interval when the payload is applied")
@@ -602,9 +602,9 @@ if __name__ == "__main__":
 
     # Action: fetch
     parser_fetch = subparsers.add_parser("fetch", help="Fetch one or more payload entries")
-    parser_fetch.add_argument("tag", type=NonEmptyStr, help="Tag for the payload file")
-    parser_fetch.add_argument("-d", "--domain", type=NonEmptyStr, default=None, help="Domain for the payload file")
-    parser_fetch.add_argument("-s", "--start", type=NonNegativeInt, default=sys.maxsize, help="A non-negative integer representing the start of interval when the payload is applied")
+    parser_fetch.add_argument("tag", type=NonEmptyStr, help="Tag for payload intervals")
+    parser_fetch.add_argument("-d", "--domain", type=NonEmptyStr, default=None, help="Domain of payload data")
+    parser_fetch.add_argument("-t", "--treq", type=NonNegativeInt, default=sys.maxsize, help="A non-negative integer representing a time within a payload interval")
 
     # Action: config
     parser_config = subparsers.add_parser("config", help="Print configuration values")

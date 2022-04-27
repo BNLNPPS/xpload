@@ -44,8 +44,8 @@ fetch multiple payloads for various subsystems associated with it.
 
 ```shell
 xpl add tag tag1 --type tag1_type --status tag1_status --domains domain1 domain2
-xpl add pil tag1 domain1 /tmp/payload1.data --start 11 --end 33
-xpl add pil tag1 domain2 /tmp/payload2.data --start 22 --end 33
+xpl add pil tag1 domain1 /tmp/payload1.data --treq 11 --end 33
+xpl add pil tag1 domain2 /tmp/payload2.data --treq 22 --end 33
 xpl push
 ```
 
@@ -62,8 +62,8 @@ payload file available for the matching interval:
 ```shell
 xpl fetch tag1
 xpl fetch tag1 --domain domain2
-xpl fetch tag1 --start 15 --domain domain2
-xpl fetch tag1 --start 15 --domain domain1
+xpl fetch tag1 --treq 15 --domain domain2
+xpl fetch tag1 --treq 15 --domain domain1
 ```
 
 
