@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  for (const string& path : result.paths)
+  for (const string path : result.paths)
     cout << path << '\n';
 
   return EXIT_SUCCESS;
