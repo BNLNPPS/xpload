@@ -14,7 +14,7 @@ FROM ${baseos} AS gcc11-prep-stage
 RUN dnf install -y gcc-toolset-11-gcc-c++ && echo "source /opt/rh/gcc-toolset-11/enable" >> /etc/bashrc
 
 FROM ${baseos} AS clang12-prep-stage
-RUN dnf install -y clang
+RUN dnf install -y clang && echo "export CXX=/usr/bin/clang++" >> /etc/bashrc
 
 
 FROM $compiler-prep-stage AS base-stage
