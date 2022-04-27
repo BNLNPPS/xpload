@@ -45,7 +45,7 @@ FROM base-stage AS build-stage
 SHELL ["/bin/bash", "--login", "-c"]
 
 COPY . xpload
-RUN cmake -S xpload -B build -DCMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic" -DCMAKE_VERBOSE_MAKEFILE=ON \
+RUN cmake -S xpload -B build -DCMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic -Werror" -DCMAKE_VERBOSE_MAKEFILE=ON \
  && cmake --build build && cmake --install build
 # Create a virtual environment for possible debugging
 ENV VIRTUAL_ENV=/opt/venv
