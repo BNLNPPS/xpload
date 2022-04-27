@@ -37,7 +37,7 @@ int main(int argc, char **argv)
   {
     cout << "Found paths:\n";
 
-    for (const string& path : result.paths)
+    for (const string path : result.paths)
       cout << path << '\n';
   }
 
