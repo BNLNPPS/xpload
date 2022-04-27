@@ -484,7 +484,7 @@ def act_on(args):
         print(config_dict)
 
     if args.action == 'show':
-        respjson = fetch_entries(args.component, args.id)
+        respjson = fetch_entries(args.component)
         pprint_named_entries(respjson, args.dump)
 
     if args.action == 'add':
@@ -578,7 +578,6 @@ if __name__ == "__main__":
     # Action: show
     parser_show = subparsers.add_parser("show", help="Show entries")
     parser_show.add_argument("component", type=str, choices=['tags', 'domains'], help="Pick a list to show available entries")
-    parser_show.add_argument("--id", type=int, default=None, help="Unique id")
 
     # Action: add
     parser_add = subparsers.add_parser("add", help="Stage payload intervals")
