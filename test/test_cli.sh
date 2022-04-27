@@ -34,10 +34,10 @@ xpl show domains
 
 xpl fetch tag_1 -d domain_1
 xpl fetch tag_1 -d domain_2
-xpl fetch tag_1 -s 3
-xpl fetch tag_1 -s 5
-xpl fetch tag_1 -s 3 -d domain_1
-xpl fetch tag_1 -s 3 -d domain_2
+xpl fetch tag_1 -t 3
+xpl fetch tag_1 -t 5
+xpl fetch tag_1 -t 3 -d domain_1
+xpl fetch tag_1 -t 3 -d domain_2
 
 xpl fetch tag_2 -d domain_1
 xpl fetch tag_2 -d domain_2
