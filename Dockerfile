@@ -42,7 +42,8 @@ RUN cd /tmp \
 FROM base-stage AS build-stage
 
 COPY . xpload
-RUN cmake -S xpload -B build && cmake --build build && cmake --install build
+RUN cmake -S xpload -B build -DCMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic" -DCMAKE_VERBOSE_MAKEFILE=ON \
+ && cmake --build build && cmake --install build
 # Create a virtual environment for possible debugging
 ENV VIRTUAL_ENV=/opt/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
