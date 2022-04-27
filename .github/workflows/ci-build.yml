@@ -37,11 +37,20 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and Push with Docker
+      - name: Build and Cache base-stage
         uses: docker/build-push-action@v2
         with:
           cache-from: type=registry,ref=ghcr.io/bnlnpps/xpload-build:cache-${{ env.BUILD_LABEL }}
           cache-to:   type=registry,ref=ghcr.io/bnlnpps/xpload-build:cache-${{ env.BUILD_LABEL }},mode=max
+          target: base-stage
+          build-args: |
+            compiler=${{ matrix.compiler }}
+            python=${{ matrix.prereq.python }}
+
+      - name: Build and Load build-stage
+        uses: docker/build-push-action@v2
+        with:
+          cache-from: type=registry,ref=ghcr.io/bnlnpps/xpload-build:cache-${{ env.BUILD_LABEL }}
           tags: ghcr.io/bnlnpps/xpload-build
           load: true
           target: build-stage
