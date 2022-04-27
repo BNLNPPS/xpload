@@ -100,7 +100,7 @@ void to_cache(const std::string& http_data, Result& result, CachedResponses& cac
 Result fetch(std::string tag, std::string domain, uint64_t timestamp, const Configurator& cfg)
 {
   // Initialize response_code with 0
-  Result result{ {tag, domain, timestamp, cfg}, "", {}, 0};
+  Result result{ {tag, domain, timestamp, cfg}, "", {}, 0, 0, 0, -1};
 
   static CachedResponses cached_responses;
 
