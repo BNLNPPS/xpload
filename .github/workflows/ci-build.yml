@@ -11,6 +11,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         compiler: [gcc8, gcc10, clang12]
         prereq: [ {python: 3.8.0, cmake: 3.20.6, curl: 7.79.1}, {python: 3.10.4, cmake: 3.23.1, curl: 7.79.1} ]
