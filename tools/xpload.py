@@ -129,10 +129,10 @@ def read_config(config_name, verbosity: int = None):
 def _get_data(endpoint: str, params: dict = {}):
     """ Get data from the endpoint """
 
-    endpoints = ['gtPayloadLists']
-    for ep in endpoints:
-        if ep not in endpoint:
-            raise RuntimeError(f"Wrong endpoint {endpoint}")
+    expected_endpoints = ['gtPayloadLists', 'gt', 'gttype', 'gtstatus', 'pt', 'pl', 'payloadiovs', 'piov']
+    matches = [ep for ep in expected_endpoints if ep in endpoint]
+    if not matches:
+        raise RuntimeError(f"Wrong endpoint {endpoint}")
 
     url = cfg.url() + "/" + endpoint
     _vlprint(3, f"-H 'Content-Type: application/json' -X GET -d '{json.dumps(params)}' {url}")
@@ -151,7 +151,9 @@ def _get_data(endpoint: str, params: dict = {}):
 def _post_data(endpoint: str, params: dict):
     """ Post data to the endpoint """
 
-    if endpoint not in ['gttype', 'gtstatus', 'gt', 'pt', 'pl', 'piov', 'pil', 'tag']:
+    expected_endpoints = ['gt', 'gttype', 'gtstatus', 'pt', 'pl', 'piov', 'pil', 'tag']
+    matches = [ep for ep in expected_endpoints if ep in endpoint]
+    if not matches:
         raise RuntimeError(f"Wrong endpoint {endpoint}")
 
     url = cfg.url() + "/" + endpoint
@@ -177,7 +179,9 @@ def _post_data(endpoint: str, params: dict):
 def _put_data(endpoint: str, params: dict):
     """ Put data to the endpoint """
 
-    if endpoint not in ['pl_attach', 'piov_attach', 'gt_change_status']:
+    expected_endpoints = ['pl_attach', 'piov_attach', 'gt_change_status']
+    matches = [ep for ep in expected_endpoints if ep in endpoint]
+    if not matches:
         raise RuntimeError(f"Wrong endpoint {endpoint}")
 
     url = cfg.url() + "/" + endpoint
