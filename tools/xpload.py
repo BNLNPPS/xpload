@@ -212,11 +212,11 @@ def create_and_link_tag(tag_name: str, tag_type: str, tag_status: str, domains: 
     return 'ok' if response == tag_name else response
 
 
-def create_and_link_pil(tag: str, domain: str, name: str, start: int, end: int, dry_run: bool):
+def create_and_link_pil(tag_name: str, domain: str, name: str, start: int, end: int, dry_run: bool):
     try:
-        pill = _get_data(f'gtPayloadLists/{tag}')[domain]
+        pill = _get_data(f'gtPayloadLists/{tag_name}')[domain]
     except Exception as e:
-        raise RuntimeError(f"{tag}/{domain} does not exist: " + repr(e))
+        raise RuntimeError(f"{tag_name}/{domain} does not exist: " + repr(e))
 
     if dry_run: return
 
