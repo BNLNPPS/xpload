@@ -80,13 +80,12 @@ def _vlprint(minverb, msg):
         print(msg)
 
 
-class Config(namedtuple('Config', ['cfgf', 'host', 'port', 'apiroot', 'apiver', 'path', 'verbosity'])):
-    __slots__ = ()
+import types
+class Config(types.SimpleNamespace):
 
-    def __new__(cls, cfgf, **kwargs):
-        kwargs = {k: v for k, v in kwargs.items() if k in cls._fields}
+    def __init__(cls, cfgf, **kwargs):
         kwargs['cfgf'] = cfgf
-        return super().__new__(cls, **kwargs)
+        super().__init__(**kwargs)
 
     def url(self):
         return "http://" + self.host + ':' + self.port + self.apiroot
@@ -110,7 +109,7 @@ def read_config(config_name, verbosity: int = None):
     else:
         config_file = f"{XPLOAD_CONFIG}.json"
 
-    config = []
+    config = None
     for config_path in search_paths:
         try:
             with open(f"{config_path}/{config_file}") as cfgf:
@@ -120,7 +119,7 @@ def read_config(config_name, verbosity: int = None):
 
     if config:
         if verbosity:
-            config['verbosity'] = verbosity
+            config.verbosity = verbosity
     else:
         print(f"Error: Cannot find config file {config_file} in", search_paths)
 
@@ -476,7 +475,7 @@ def fetch_payloads(tag: str, domain: str, treq: int):
 
 def act_on(args):
     if args.action == 'config':
-        config_dict = cfg._asdict()
+        config_dict = cfg.__dict__
         try:
             for ix in args.field:
                 config_dict = config_dict[int(ix) if ix.isnumeric() else ix]
