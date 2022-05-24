@@ -85,6 +85,7 @@ void Configurator::ReadConfig(std::string filepath)
       json["apiroot"], json["apiver"],
       json["path"],
       json["use_cache"],
+      json["dry_run"],
       json["verbosity"],
       json["retry_times"],
       json["retry_max_delay"]

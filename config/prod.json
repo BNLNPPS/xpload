@@ -7,6 +7,7 @@
     "/cvmfs/sphenix.sdcc.bnl.gov/gcc-8.3/opt/sphenix/core/calibrations/DBTest/"
   ],
   "use_cache": true,
+  "dry_run": false,
   "verbosity": 0,
   "retry_times": 5,
   "retry_max_delay": 60
