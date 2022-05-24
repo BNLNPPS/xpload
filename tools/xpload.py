@@ -542,6 +542,8 @@ def pprint_payload(respjson, dump: bool):
         if paths:
             print("\n".join(sorted(paths)))
         else:
+            paths = [f'{o.payload_type}/{p.payload_url}' for o in objs for p in o.payload_iov]
+            print("\n".join(sorted(paths))) if paths else None
             raise FileExistsError("No payload file was found in any prefix")
 
 
