@@ -234,20 +234,20 @@ def create_and_link_pil(tag_name: str, domain: str, name: str, start: int, end: 
 
 
 def form_api_url(component: str, uid: int = None):
-    url = cfg.url()
+    url = ""
 
     if component == 'tags':
-        url += "/gt"
+        url += "gt"
     elif component == 'tag_types':
-        url += "/gttype"
+        url += "gttype"
     elif component == 'tag_statuses':
-        url += "/gtstatus"
+        url += "gtstatus"
     elif component == 'domains':
-        url += "/pt"
+        url += "pt"
     elif component == 'domain_lists':
-        url += "/pl"
+        url += "pl"
     elif component == 'payloads':
-        url += "/piov"
+        url += "piov"
     else:
         print(f"Error: Wrong component {component}. Cannot form valid URL")
 
@@ -260,25 +260,7 @@ def form_api_url(component: str, uid: int = None):
 def fetch_entries(component: str, uid: int = None):
     """ Fetch entries using respective endpoints """
     url = form_api_url(component, uid)
-
-    try:
-        response = requests.get(url)
-        respjson = response.json()
-    except:
-        print(f"Error: Something went wrong while looking for {component} at {url}")
-        return []
-
-    # Always return a list
-    entries = respjson if isinstance(respjson, list) else [respjson]
-
-    try:
-        jsonschema.validate(entries, general_schema)
-    except:
-        error_details = f": {component} may not contain entry with id={uid}" if uid else ""
-        print(f"Error: Encountered invalid response from {url}", error_details)
-        return []
-
-    return entries
+    return _get_data(url)
 
 
 def payload_exists(payload_name: str) -> pathlib.Path:
@@ -460,23 +442,10 @@ def push():
 
 
 def fetch_payloads(tag: str, domain: str, treq: int):
-
-    url = f"{cfg.url()}/payloadiovs/?gtName={tag}&majorIOV=0&minorIOV={treq}"
-
-    try:
-        response = requests.get(url)
-        respjson = response.json()
-    except:
-        print(f"Error: Something went wrong while looking for tag {tag} and time {treq}. Check", url)
-        return []
-
-    # Always return a list
-    respjson = respjson if isinstance(respjson, list) else [respjson]
-
+    entries = _get_data(f'payloadiovs/?gtName={tag}&majorIOV=0&minorIOV={treq}')
     if domain:
-        respjson = [e for e in respjson if e['payload_type'] == domain]
-
-    return respjson
+        entries = [e for e in entries if e['payload_type'] == domain]
+    return entries
 
 
 def act_on(args):
