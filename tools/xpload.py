@@ -137,10 +137,12 @@ def _get_data(endpoint: str, params: dict = {}):
     url = cfg.url() + "/" + endpoint
     _vlprint(3, f"-H 'Content-Type: application/json' -X GET -d '{json.dumps(params)}' {url}")
 
+    respjson = None
     try:
         response = requests.get(url=url, json=params)
         response.raise_for_status()
         respjson = response.json()
+        jsonschema.validate(respjson, general_schema)
     except Exception as e:
         respmsg = f"{json.dumps(respjson)} " if respjson else ""
         raise RuntimeError(f"Unexpected response for GET {json.dumps(params)} {url}: " + respmsg + repr(e))
