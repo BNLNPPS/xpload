@@ -159,8 +159,8 @@ int main(int argc, char *argv[])
 
     int error_code = 0;
 
-    if (result.paths.size() != 1) {
-      cerr << "Error: Expected single payload but got " << result.paths.size() << " [" << __PRETTY_FUNCTION__ << "]\n";
+    if (result.paths.size() < 1) {
+      cerr << "Error: Expected at least one payload but got " << result.paths.size() << " [" << __PRETTY_FUNCTION__ << "]\n";
       error_code = 1;
     } else if ( result.paths[0].filename() != tk.payload) {
       cerr << "Error: Expected " << tk.payload << " but got " << result.paths[0] << " [" << __PRETTY_FUNCTION__ << "]\n";
@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
            << result.response_code << ", "
            << result.cache_size << ", "
            << result.total_retries << ", \""
-           << (!error_code ? result.paths[0] : "") << "\", "
+           << (!error_code ? result.payload : "") << "\", "
            << error_code << "\n";
     }
   }

@@ -44,7 +44,6 @@ void parse_response(const std::string& http_data, Result& result)
         if (std::filesystem::exists(fullpath) || reqpars.cfg.db.dry_run)
         {
           result.paths.push_back(fullpath);
-          break;
         }
         else
         {
