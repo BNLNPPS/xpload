@@ -8,6 +8,7 @@
     "/tmp/path/to/payload/data1"
   ],
   "use_cache": true,
+  "dry_run": false,
   "verbosity": 2,
   "retry_times": 5,
   "retry_max_delay": 60

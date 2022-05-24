@@ -41,7 +41,7 @@ void parse_response(const std::string& http_data, Result& result)
       for (const auto& prefix : reqpars.cfg.db.path)
       {
         std::filesystem::path fullpath = prefix/obj["payload_type"]/obj["payload_iov"][0]["payload_url"].get<std::string>();
-        if (std::filesystem::exists(fullpath))
+        if (std::filesystem::exists(fullpath) || reqpars.cfg.db.dry_run)
         {
           result.paths.push_back(fullpath);
           break;

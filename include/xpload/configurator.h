@@ -14,6 +14,7 @@ struct DbConfig
   std::string apiver{""};
   std::vector<std::filesystem::path> path{"/path/to/payload/data"};
   bool use_cache{false};
+  bool dry_run{false};
   int verbosity{0};
   int retry_times{5};
   int retry_max_delay{60};
