@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
 
   // Print the header
   if (config.db.verbosity > 0)
-    cout << "time, duration, wait, tag, domain, timestamp, byte_count, response_code, cache_size, path, error_code\n";
+    cout << "time, duration, wait, tag, domain, timestamp, byte_count, response_code, cache_size, total_retries, path, error_code\n";
 
   Tokens tk;
 
