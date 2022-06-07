@@ -129,7 +129,7 @@ def read_config(config_name, verbosity: int = None):
 def _get_data(endpoint: str, params: dict = {}):
     """ Get data from the endpoint """
 
-    expected_endpoints = ['gtPayloadLists', 'gt', 'gttype', 'gtstatus', 'pt', 'pl', 'payloadiovs', 'piov']
+    expected_endpoints = ['globalTags', 'gtPayloadLists', 'gt', 'gttype', 'gtstatus', 'pt', 'pl', 'payloadiovs', 'piov']
     matches = [ep for ep in expected_endpoints if ep in endpoint]
     if not matches:
         raise RuntimeError(f"Wrong endpoint {endpoint}")
@@ -237,7 +237,7 @@ def form_api_url(component: str, uid: int = None):
     url = ""
 
     if component == 'tags':
-        url += "gt"
+        url += "globalTags"
     elif component == 'tag_types':
         url += "gttype"
     elif component == 'tag_statuses':
