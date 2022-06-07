@@ -1,10 +1,9 @@
 executable              = test_xpload_rand.sh
-arguments               = "100 9 $(Process)"
+arguments               = "9 10 $(Process) 1-100 1-10 1-1000"
 should_transfer_files   = IF_NEEDED
 when_to_transfer_output = ON_EXIT
 
 output       = logs/process_$(Process).out
 error        = logs/process_$(Process).err
-log          = logs/process_$(Process).log
 
-queue 1000
+queue 10000
