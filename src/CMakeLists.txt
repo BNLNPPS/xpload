@@ -4,6 +4,7 @@ configure_file(version.h.in version.h @ONLY)
 set(source_files
     configurator.cpp
     fetch.cpp
+    push.cpp
     requests.cpp
 )
 
