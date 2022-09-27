@@ -6,24 +6,20 @@
 #include "xpload/xpload.h"
 #include "arg_parser.h"
 
+using namespace std;
 
-/**
- * Usage:
- *
- * $ test_xpload -t <tag> -s <timestamp>
- */
-int main(int argc, char *argv[])
+
+int test_push(const ArgParser& arg_parser)
 {
-  using namespace std;
 
-  ArgParser arg_parser(argc, argv);
+  std::cout << tag << domain << file << ts_min << ts_max << '\n';
 
-  if (!arg_parser.verify())
-  {
-    arg_parser.usage();
-    return EXIT_FAILURE;
-  }
+  return EXIT_SUCCESS;
+}
 
+
+int test_fetch(const ArgParser& arg_parser)
+{
   string tag(arg_parser.get_value("-t"));
   string domain(arg_parser.get_value("-d"));
   uint64_t timestamp = stoul(arg_parser.get_value("-s"));
@@ -42,4 +38,23 @@ int main(int argc, char *argv[])
     cout << path << '\n';
 
   return EXIT_SUCCESS;
+}
+
+
+/**
+ * Usage:
+ *
+ * $ test_xpload <push|fetch> -t <tag> -s <timestamp>
+ */
+int main(int argc, char *argv[])
+{
+  ArgParser arg_parser(argc, argv);
+
+  if (!arg_parser.verify())
+  {
+    arg_parser.usage();
+    return EXIT_FAILURE;
+  }
+
+  return arg_parser.mode == "push" ? test_push(arg_parser) : test_fetch(arg_parser);
 }
