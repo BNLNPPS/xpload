@@ -17,6 +17,8 @@ class ArgParser
   bool verify();
   void usage();
 
+  std::string mode;
+
  private:
 
   std::vector<std::string> args;
@@ -30,7 +32,9 @@ ArgParser::ArgParser(int &argc, char *argv[])
 
   args.push_back(prg_name);
 
-  for (int i=1; i < argc; ++i)
+  mode = argc > 1 ? std::string(argv[1]) : "";
+
+  for (int i=2; i < argc; ++i)
     args.push_back( std::string(argv[i]) );
 }
 
@@ -56,8 +60,18 @@ std::string ArgParser::get_value(const std::string &option) const
 
 bool ArgParser::verify()
 {
+  if (mode != "push" && mode != "fetch") {
+    std::cerr << "Error: the first argument (mode) must be either \"push\" or \"fetch\"\n";
+    return false;
+  }
+
   if (get_value("-t").empty()) {
     std::cerr << "Error: -t option must be set\n";
+    return false;
+  }
+
+  if (get_value("-d").empty() && mode == "push") {
+    std::cerr << "Error: -d option must be set\n";
     return false;
   }
 
@@ -67,5 +81,6 @@ bool ArgParser::verify()
 
 void ArgParser::usage()
 {
-  std::cout << "Usage: " << args[0] << " -t <tag> -d <domain> -s <timestamp>\n";
+  std::cout << "Usage: " << args[0] << " push -t <tag> -d <domain>\n"
+            << "       " << args[0] << " fetch -t <tag> [-d <domain>] [-s <timestamp>]\n";
 }
