@@ -9,6 +9,7 @@
 #include <nlohmann/json.hpp>
 
 #include "xpload/configurator.h"
+#include "xpload/json.h"
 #include "config.h"
 
 namespace xpload {
@@ -80,16 +81,7 @@ void Configurator::ReadConfig(std::string filepath)
     std::ifstream ifs(filepath);
     ifs >> json;
 
-    db = {
-      json["host"], json["port"],
-      json["apiroot"], json["apiver"],
-      json["path"],
-      json["use_cache"],
-      json["dry_run"],
-      json["verbosity"],
-      json["retry_times"],
-      json["retry_max_delay"]
-    };
+    db = json.get<DbConfig>();
   }
   catch (nlohmann::json::exception& e) {
     std::string errmsg{"Failed reading config parameters from " + filepath + "\n" + e.what()};
