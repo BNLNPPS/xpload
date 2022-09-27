@@ -135,8 +135,7 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  string cfg = getenv("XPLOAD_CONFIG") ? string(getenv("XPLOAD_CONFIG")) : "test";
-  xpload::Configurator config(cfg);
+  xpload::Configurator config;
 
   // Print the header
   if (config.db.verbosity > 0)
