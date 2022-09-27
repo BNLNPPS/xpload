@@ -46,7 +46,6 @@ std::string ArgParser::get_value(const std::string &option) const
   }
 
   // Default values
-  if (value.empty() && option == "-c") return "test";
   if (value.empty() && option == "-t") return "";
   if (value.empty() && option == "-d") return "";
   if (value.empty() && option == "-s") return std::to_string(UINT64_MAX);
@@ -68,5 +67,5 @@ bool ArgParser::verify()
 
 void ArgParser::usage()
 {
-  std::cout << "Usage: " << args[0] << " -c <config_name> -t <tag> -d <domain> -s <timestamp>\n";
+  std::cout << "Usage: " << args[0] << " -t <tag> -d <domain> -s <timestamp>\n";
 }

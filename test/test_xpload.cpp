@@ -10,7 +10,7 @@
 /**
  * Usage:
  *
- * $ test_xpload -c <config_name> -t <tag> -s <timestamp>
+ * $ test_xpload -t <tag> -s <timestamp>
  */
 int main(int argc, char *argv[])
 {
@@ -24,12 +24,11 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  string cfg(arg_parser.get_value("-c"));
   string tag(arg_parser.get_value("-t"));
   string domain(arg_parser.get_value("-d"));
   uint64_t timestamp = stoul(arg_parser.get_value("-s"));
 
-  xpload::Configurator config(cfg);
+  xpload::Configurator config;
 
   xpload::Result result = xpload::fetch(tag, domain, timestamp, config);
 
