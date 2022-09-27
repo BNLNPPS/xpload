@@ -52,6 +52,9 @@ std::string ArgParser::get_value(const std::string &option) const
   // Default values
   if (value.empty() && option == "-t") return "";
   if (value.empty() && option == "-d") return "";
+  if (value.empty() && option == "-p") return "";
+  if (value.empty() && option == "-b") return std::to_string(0);
+  if (value.empty() && option == "-e") return std::to_string(UINT64_MAX);
   if (value.empty() && option == "-s") return std::to_string(UINT64_MAX);
 
   return value;
@@ -75,12 +78,22 @@ bool ArgParser::verify()
     return false;
   }
 
+  if (get_value("-p").empty() && mode == "push") {
+    std::cerr << "Error: -d option must be set\n";
+    return false;
+  }
+
+  if (stoul(get_value("-b")) > stoul(get_value("-e")) ) {
+    std::cerr << "Error: begin timestamp > end timestamp\n";
+    return false;
+  }
+
   return true;
 }
 
 
 void ArgParser::usage()
 {
-  std::cout << "Usage: " << args[0] << " push -t <tag> -d <domain>\n"
+  std::cout << "Usage: " << args[0] << " push -t <tag> -d <domain> -p <payload> [-b <timestamp>] [-e <timestamp>]\n"
             << "       " << args[0] << " fetch -t <tag> [-d <domain>] [-s <timestamp>]\n";
 }

@@ -11,6 +11,11 @@ using namespace std;
 
 int test_push(const ArgParser& arg_parser)
 {
+  string tag{arg_parser.get_value("-t")};
+  string domain{arg_parser.get_value("-d")};
+  string file{arg_parser.get_value("-p")};
+  uint64_t ts_min{stoul(arg_parser.get_value("-b"))};
+  uint64_t ts_max{stoul(arg_parser.get_value("-e"))};
 
   std::cout << tag << domain << file << ts_min << ts_max << '\n';
 
