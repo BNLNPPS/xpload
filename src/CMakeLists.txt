@@ -4,6 +4,7 @@ configure_file(version.h.in version.h @ONLY)
 set(source_files
     configurator.cpp
     fetch.cpp
+    utils.cpp
 )
 
 add_library(xpload ${source_files})
