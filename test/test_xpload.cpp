@@ -17,7 +17,7 @@ int test_push(const ArgParser& arg_parser)
   uint64_t ts_min{stoul(arg_parser.get_value("-b"))};
   uint64_t ts_max{stoul(arg_parser.get_value("-e"))};
 
-  std::cout << tag << domain << file << ts_min << ts_max << '\n';
+  xpload::push({file, domain, tag, "online", "unlocked", ts_min, ts_max});
 
   return EXIT_SUCCESS;
 }
