@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "xpload/configurator.h"
+
 namespace xpload {
 
 /**
@@ -13,5 +15,9 @@ namespace xpload {
  *     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, save_data);
  */
 std::size_t save_data(const char* input, std::size_t chunk_size, std::size_t n_chunks, std::string* out);
+
+nlohmann::json _get_data(std::string endpoint, std::string jsonpars, const Configurator& cfg);
+nlohmann::json _post_data(std::string endpoint, std::string jsonpars, const Configurator& cfg);
+nlohmann::json _put_data(std::string endpoint, std::string jsonpars, const Configurator& cfg);
 
 }
