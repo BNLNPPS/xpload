@@ -54,8 +54,8 @@ std::string ArgParser::get_value(const std::string &option) const
   if (value.empty() && option == "-d") return "";
   if (value.empty() && option == "-p") return "";
   if (value.empty() && option == "-b") return std::to_string(0);
-  if (value.empty() && option == "-e") return std::to_string(UINT64_MAX);
-  if (value.empty() && option == "-s") return std::to_string(UINT64_MAX);
+  if (value.empty() && option == "-e") return std::to_string(INT64_MAX);
+  if (value.empty() && option == "-s") return std::to_string(INT64_MAX);
 
   return value;
 }
