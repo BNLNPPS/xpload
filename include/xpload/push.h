@@ -17,7 +17,7 @@ struct Payload
   std::string tag_type = "online";
   std::string tag_status = "unlocked";
   uint64_t ts_min = 0;
-  uint64_t ts_max = UINT64_MAX;
+  uint64_t ts_max = INT64_MAX;
 };
 
 void push(Payload payload, const Configurator& cfg = Configurator());
